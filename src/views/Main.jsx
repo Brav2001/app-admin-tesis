@@ -1,5 +1,6 @@
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import Login from "./auth/Login";
+import OrdersCollector from "./orders/OrdersCollector";
 import theme from "../utils/theme";
 
 import { useFonts } from "expo-font";
@@ -26,7 +27,8 @@ const Main = () => {
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <SafeAreaView style={styles.containerSafe}>
-        <Login />
+        <OrdersCollector />
+        {/* <Login /> */}
       </SafeAreaView>
     </View>
   );

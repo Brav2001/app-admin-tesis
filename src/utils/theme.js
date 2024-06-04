@@ -6,11 +6,13 @@ const theme = {
     backgroundSeccions: "#10503F",
     backgroundActionButtons: "#D9D9D9",
     backgroundActionButtonsPressed: "#B5B5B5",
+    textPrimary: "#FFFFFF",
   },
   fonts: {
     main: "Courier",
     sizes: {
       title: 25,
+      paragraph: 16,
     },
   },
 };
