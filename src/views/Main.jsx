@@ -6,10 +6,13 @@ import theme from "../utils/theme";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
+import { useStore } from "../utils/store";
 
 SplashScreen.preventAutoHideAsync();
 
 const Main = () => {
+  const [logged] = useStore((state) => [state.logged]);
+
   const [fontsLoaded, fontError] = useFonts({
     Courier: require("../assets/fonts/Courier-Prime.ttf"),
   });
@@ -27,8 +30,7 @@ const Main = () => {
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <SafeAreaView style={styles.containerSafe}>
-        <OrdersCollector />
-        {/* <Login /> */}
+        {logged ? <OrdersCollector /> : <Login />}
       </SafeAreaView>
     </View>
   );
