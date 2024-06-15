@@ -63,3 +63,13 @@ export const retrieveToken = async () => {
     console.log("Error al recuperar el token:", error);
   }
 };
+
+export const removeData = async () => {
+  try {
+    await SecureStore.deleteItemAsync("authToken");
+    await SecureStore.deleteItemAsync("authId");
+    await SecureStore.deleteItemAsync("authRol");
+  } catch (error) {
+    console.log("Error al eliminar la data:", error);
+  }
+};

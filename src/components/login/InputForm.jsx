@@ -3,7 +3,12 @@ import theme from "../../utils/theme";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const InputForm = ({ type, value = "", setValue = () => {} }) => {
+const InputForm = ({
+  type,
+  value = "",
+  onChangeText = () => {},
+  onBlur = () => {},
+}) => {
   return (
     <View style={styles.inputContainer}>
       {type === "password" ? (
@@ -24,7 +29,8 @@ const InputForm = ({ type, value = "", setValue = () => {} }) => {
         selectionColor={theme.colors.primary}
         secureTextEntry={type === "password"}
         value={value}
-        onChangeText={setValue}
+        onChangeText={onChangeText}
+        onBlur={onBlur}
         autoCapitalize="none"
       />
     </View>
