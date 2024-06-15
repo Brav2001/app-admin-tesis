@@ -1,5 +1,5 @@
-const DOMAIN = "http://192.168.0.107";
-const PORT = ":3000";
+const DOMAIN = process.env.EXPO_PUBLIC_DOMAIN;
+const PORT = process.env.EXPO_PUBLIC_PORT;
 const api = {
   auth: `${DOMAIN}${PORT}/authStaff/login`,
 };
