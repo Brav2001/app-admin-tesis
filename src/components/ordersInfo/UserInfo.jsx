@@ -25,17 +25,17 @@ const UserInfo = () => {
 const styles = StyleSheet.create({
   userInfoContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "90%",
-    marginTop: 10,
+    width: "100%",
+    marginTop: 20,
+    justifyContent: "space-between",
   },
   infoBox: {
+    maxWidth: "45%",
     backgroundColor: theme.colors.backgroundCards,
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
     flex: 1,
-    marginHorizontal: 5,
   },
   infoText: {
     color: theme.colors.textPrimary,
