@@ -17,16 +17,28 @@ const Header = ({ name, onLogout }) => {
     onLogout();
   };
   return (
-    <View>
-      <View style={styles.container}>
-        <Pressable style={styles.logoutButton} onPress={toggleModal}>
-          <FontAwesome
-            name="power-off"
-            size={40}
-            color={theme.colors.backgroundCards}
-          />
-        </Pressable>
-        <Text style={styles.headerText}>JUAN SEBASTIAN BAUTISTA</Text>
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <View
+          style={{
+            backgroundColor: "#C3C3C3",
+            paddingBottom: 5,
+            borderRadius: 10,
+            paddingRight: 5,
+          }}
+        >
+          <Pressable style={styles.logoutButton} onPress={toggleModal}>
+            <FontAwesome
+              name="power-off"
+              size={35}
+              color={theme.colors.backgroundCards}
+            />
+          </Pressable>
+        </View>
+
+        <View style={styles.containerNameUser}>
+          <Text style={styles.headerText}>JUAN SEBASTIAN BAUTISTA</Text>
+        </View>
       </View>
 
       <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
@@ -37,7 +49,14 @@ const Header = ({ name, onLogout }) => {
           </Text>
           <View style={styles.buttonContainer}>
             <Pressable style={styles.cancelButton} onPress={toggleModal}>
-              <Text style={styles.buttonText}>Cancelar</Text>
+              <Text
+                style={{
+                  ...styles.buttonText,
+                  color: theme.colors.backgroundMain,
+                }}
+              >
+                Cancelar
+              </Text>
             </Pressable>
             <Pressable style={styles.confirmButton} onPress={handleLogout}>
               <Text style={styles.buttonText}>Sí</Text>
@@ -51,33 +70,40 @@ const Header = ({ name, onLogout }) => {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 15,
+  },
+  headerContainer: {
+    flexDirection: "row",
     width: "100%",
+    paddingHorizontal: 0,
+    alignItems: "center",
+  },
+  containerNameUser: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
     backgroundColor: theme.colors.backgroundCards,
     borderRadius: 10,
-    marginTop: 30,
-    marginBottom: 10,
+    marginLeft: 10,
   },
 
   logoutButton: {
-    marginRight: 10,
-    padding: 10,
+    padding: 5,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
-    width: "20%",
-    height: "70",
+    aspectRatio: 1 / 1,
     alignItems: "center",
     justifyContent: "center",
   },
 
   headerText: {
     color: theme.colors.textPrimary,
-    fontSize: theme.fonts.sizes.title,
+    fontSize: 18,
     fontWeight: theme.fonts.main,
     flex: 1,
-    textAlign: "center",
+    textAlign: "left",
   },
 
   modalContainer: {
@@ -91,12 +117,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: theme.fonts.main,
     marginBottom: 10,
+    fontFamily: theme.fonts.main,
+    color: "#FFF",
   },
 
   modalText: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 20,
+    fontFamily: theme.fonts.main,
+    color: "#FFF",
   },
 
   buttonContainer: {
@@ -106,7 +136,7 @@ const styles = StyleSheet.create({
   },
 
   cancelButton: {
-    backgroundColor: "red",
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 5,
     flex: 1,
@@ -126,6 +156,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 16,
+    fontFamily: theme.fonts.main,
   },
 });
 
