@@ -30,8 +30,8 @@ const Main = () => {
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <SafeAreaView style={styles.containerSafe}>
-        {/* {logged ? <OrdersCollector /> : <Login />} */}
-        <OrdersCollector />
+        {logged ? <OrdersCollector /> : <Login />}
+        {/* <OrdersCollector /> */}
       </SafeAreaView>
     </View>
   );
