@@ -4,8 +4,14 @@ import { StyleSheet, View, Text, Pressable } from "react-native";
 import Modal from "react-native-modal";
 import theme from "../../utils/theme";
 import { FontAwesome } from "@expo/vector-icons";
+import { removeData } from "../../utils/storageAuth";
+import { useStore } from "../../utils/store";
 
-const Header = ({ name, onLogout }) => {
+const Header = () => {
+  const [ChangeLogged, dataStaff] = useStore((state) => [
+    state.ChangeLogged,
+    state.dataStaff,
+  ]);
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
@@ -14,7 +20,8 @@ const Header = ({ name, onLogout }) => {
 
   const handleLogout = () => {
     setModalVisible(false);
-    onLogout();
+    removeData();
+    ChangeLogged(false);
   };
   return (
     <View style={styles.container}>
@@ -37,7 +44,9 @@ const Header = ({ name, onLogout }) => {
         </View>
 
         <View style={styles.containerNameUser}>
-          <Text style={styles.headerText}>JUAN SEBASTIAN BAUTISTA</Text>
+          <Text style={styles.headerText}>
+            {dataStaff?.name} {dataStaff?.lastName}
+          </Text>
         </View>
       </View>
 

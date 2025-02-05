@@ -1,5 +1,7 @@
 {
   "expo": {
+    "scheme": "laCosecha",
+    "newArchEnabled": true,
     "name": "app-admin-tesis",
     "slug": "app-admin-tesis",
     "version": "1.0.0",
@@ -19,9 +21,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.INTERNET"
-      ]
+      "permissions": ["android.permission.INTERNET"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,12 +30,11 @@
       [
         "expo-font",
         {
-          "fonts": [
-            "src/assets/fonts/Courier-Prime.ttf"
-          ]
+          "fonts": ["src/assets/fonts/Courier-Prime.ttf"]
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-router"
     ]
   }
 }

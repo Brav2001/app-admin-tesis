@@ -1,13 +1,15 @@
 import { SafeAreaView, StyleSheet, View } from "react-native";
+import { Link } from "expo-router";
+
 import Login from "./auth/Login";
-import OrdersCollector from "./orders/OrdersCollector";
-import theme from "../utils/theme";
+import OrdersCollector from "@/views/orders/OrdersCollector";
+import theme from "@/utils/theme";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
-import { useStore } from "../utils/store";
-import { retrieveAuth } from "../utils/storageAuth";
+import { useStore } from "@/utils/store";
+import { retrieveAuth } from "@/utils/storageAuth";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,7 +21,7 @@ const Main = () => {
   ]);
 
   const [fontsLoaded, fontError] = useFonts({
-    Courier: require("../assets/fonts/Courier-Prime.ttf"),
+    Courier: require("@/assets/fonts/Courier-Prime.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {

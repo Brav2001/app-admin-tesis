@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet } from "react-native";
-import theme from "../../utils/theme";
-import LogoLogin from "../../components/login/LogoLogin";
-import MainCard from "../../components/MainCard";
-import LoginForm from "../../components/login/LoginForm";
+import { View, StyleSheet } from "react-native";
+
+import LogoLogin from "@/components/login/LogoLogin";
+import MainCard from "@/components/MainCard";
+import LoginForm from "@/components/login/LoginForm";
 
 const Login = () => {
   return (

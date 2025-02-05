@@ -2,13 +2,17 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import theme from "../../utils/theme";
 import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useStore } from "../../utils/store";
 
 const UserInfo = () => {
+  const [dataStaff] = useStore((state) => [state.dataStaff]);
   return (
     <View style={styles.userInfoContainer}>
       <View style={styles.infoBox}>
         <FontAwesome6 name="clipboard-user" size={32} color="#FFFFFF" />
-        <Text style={styles.infoText}>Recolector</Text>
+        <Text style={styles.infoText}>
+          {dataStaff?.Rol?.name === "PACKER" && "RECOLECTOR"}
+        </Text>
       </View>
       <View style={styles.infoBox}>
         <MaterialCommunityIcons

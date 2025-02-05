@@ -1,10 +1,11 @@
 import * as SecureStore from "expo-secure-store";
 
 export const storeData = async (data) => {
+  console.log("Data recibida:", data);
   try {
     await SecureStore.setItemAsync("authToken", data.token);
-    await SecureStore.setItemAsync("authId", data.id);
-    await SecureStore.setItemAsync("authRol", data.rol);
+    await SecureStore.setItemAsync("authId", data.Staff.id);
+    await SecureStore.setItemAsync("authRol", data.Rol.name);
   } catch (error) {
     console.log("Error al almacenar el token:", error);
   }
@@ -16,9 +17,9 @@ export const retrieveAuth = async () => {
     const rol = await SecureStore.getItemAsync("authRol");
     const id = await SecureStore.getItemAsync("authId");
     if (token && rol && id) {
-      console.log("Id recuperado:", { token, rol, id });
+      return true;
     } else {
-      console.log("No se encontró auth almacenado");
+      return false;
     }
   } catch (error) {
     console.log("Error al recuperar el auth:", error);

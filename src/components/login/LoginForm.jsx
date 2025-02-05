@@ -16,7 +16,10 @@ const initialValues = {
 };
 
 const LoginForm = () => {
-  const [ChangeLogged] = useStore((state) => [state.ChangeLogged]);
+  const [ChangeLogged, ChangeDataStaff] = useStore((state) => [
+    state.ChangeLogged,
+    state.ChangeDataStaff,
+  ]);
 
   const handleLogin = (values) => {
     //validar datos antes de hacer login
@@ -24,6 +27,7 @@ const LoginForm = () => {
       .post(api.auth, { email: values.email, password: values.password })
       .then(async (res) => {
         ChangeLogged(true);
+        ChangeDataStaff(res.data.Staff);
         await storeData(res.data);
       })
       .catch(

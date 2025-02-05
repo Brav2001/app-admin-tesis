@@ -1,28 +1,31 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Link } from "expo-router";
 import theme from "../../utils/theme";
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const OrderItem = ({ order }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.orderItemContainer}>
-        <View style={styles.orderDetails}>
-          <Feather name="shopping-bag" size={40} color="#FFFFFF" />
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.orderNumber}># {order.orderNumber}</Text>
-          <Text style={styles.orderTime}>
-            <Ionicons name="time-outline" size={24} color="#FFFFF" />{" "}
-            {order.time}
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.orderButton}>
-          <Text style={styles.orderButtonText}>
-            <FontAwesome name="arrow-right" size={30} color="#FFFFFF" />
-          </Text>
+      <Link href={"collector/OrderDetail"} asChild>
+        <TouchableOpacity>
+          <View style={styles.orderItemContainer}>
+            <View style={styles.orderDetails}>
+              <Feather name="shopping-bag" size={40} color="#FFFFFF" />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.orderNumber}># {order.orderNumber}</Text>
+              <Text style={styles.orderTime}>
+                <Ionicons name="time-outline" size={24} color="#FFFFF" />{" "}
+                {order.time}
+              </Text>
+            </View>
+            <Text style={styles.orderButtonText}>
+              <FontAwesome name="arrow-right" size={30} color="#FFFFFF" />
+            </Text>
+          </View>
         </TouchableOpacity>
-      </View>
+      </Link>
     </View>
   );
 };
@@ -56,11 +59,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     fontSize: theme.fonts.sizes.paragraph,
   },
-  // orderButton: {
-  //   backgroundColor: theme.colors.backgroundMain,
-  //   padding: 10,
-  //   borderRadius: 10,
-  // },
   orderButtonText: {
     color: theme.colors.textPrimary,
     fontSize: 16,
