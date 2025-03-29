@@ -5,10 +5,11 @@ import theme from "../../utils/theme";
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const OrderItem = ({ order }) => {
+  const OpenCamera = () => {};
   return (
     <View style={styles.container}>
       <Link href={"collector/OrderDetail"} asChild>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={OpenCamera}>
           <View style={styles.orderItemContainer}>
             <View style={styles.orderDetails}>
               <Feather name="shopping-bag" size={40} color="#FFFFFF" />

@@ -3,6 +3,7 @@ import { Link } from "expo-router";
 
 import Login from "./auth/Login";
 import OrdersCollector from "@/views/orders/OrdersCollector";
+import OrdersDetail from "./collector/OrderDetail";
 import theme from "@/utils/theme";
 
 import { useFonts } from "expo-font";
@@ -39,7 +40,7 @@ const Main = () => {
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <SafeAreaView style={styles.containerSafe}>
-        {!logged && <Login />}
+        {!logged && <OrdersDetail />}
         {dataStaff?.Rol?.name === "PACKER" && logged && <OrdersCollector />}
       </SafeAreaView>
     </View>
