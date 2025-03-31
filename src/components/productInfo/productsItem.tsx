@@ -1,29 +1,28 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { Link } from "expo-router";
 import theme from "../../utils/theme";
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 
-const OrderItem = ({ order }) => {
+const ProductItem = ({ product }) => {
   const OpenCamera = () => {};
   return (
     <View style={styles.container}>
-      <Link href={`collector/OrderDetail?id=${order.id}`} asChild>
+      <Link href={"collector/productDetail"} asChild>
         <TouchableOpacity onPress={OpenCamera}>
-          <View style={styles.orderItemContainer}>
-            <View style={styles.orderDetails}>
-              <Feather name="shopping-bag" size={40} color="#FFFFFF" />
-            </View>
+          <View style={styles.productItemContainer}>
             <View style={styles.textContainer}>
-              <Text style={styles.orderNumber}># {order.orderNumber}</Text>
-              <Text style={styles.orderTime}>
-                <Ionicons name="time-outline" size={24} color="#FFFFF" />{" "}
-                {order.time}
-              </Text>
+              <Text style={styles.productName}>{product.name}</Text>
+              <Text style={styles.productWeigth}>{product.weigth}</Text>
             </View>
-            <Text style={styles.orderButtonText}>
-              <FontAwesome name="arrow-right" size={30} color="#FFFFFF" />
-            </Text>
+            <View>
+              <Image
+                source={{
+                  uri: product.image,
+                }}
+                style={{ width: 50, height: 50, borderRadius: 25 }}
+              />
+            </View>
           </View>
         </TouchableOpacity>
       </Link>
@@ -35,10 +34,10 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: 5,
     backgroundColor: theme.colors.backgroundMain,
-    marginBottom: 5,
+    marginBottom: 10,
     borderRadius: 10,
   },
-  orderItemContainer: {
+  productItemContainer: {
     backgroundColor: theme.colors.backgroundCards,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -46,21 +45,21 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
   },
-  orderDetails: {
+  productDetails: {
     flexDirection: "column",
   },
-  orderNumber: {
+  productName: {
     color: theme.colors.textPrimary,
-    fontSize: theme.fonts.sizes.paragraph,
+    fontSize: theme.fonts.sizes.subtitle,
     fontWeight: "bold",
   },
-  orderTime: {
+  productWeigth: {
     color: theme.colors.textPrimary,
     justifyContent: "center",
     alignItems: "center",
     fontSize: theme.fonts.sizes.paragraph,
   },
-  orderButtonText: {
+  productButtonText: {
     color: theme.colors.textPrimary,
     fontSize: 16,
   },
@@ -69,4 +68,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderItem;
+export default ProductItem;

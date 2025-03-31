@@ -11,7 +11,9 @@ const theme = {
   fonts: {
     main: "Courier",
     sizes: {
+      bigtitle: 28,
       title: 25,
+      subtitle: 20,
       paragraph: 16,
     },
   },

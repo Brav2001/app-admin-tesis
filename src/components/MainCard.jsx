@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text } from "react-native";
 import theme from "../utils/theme";
 
-const MainCard = ({ children, title }) => {
+const MainCard = ({ children, title = "" }) => {
   return (
     <View style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
