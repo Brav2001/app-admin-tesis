@@ -2,13 +2,12 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { Link } from "expo-router";
 import theme from "../../utils/theme";
-import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const ProductItem = ({ product }) => {
   const OpenCamera = () => {};
   return (
     <View style={styles.container}>
-      <Link href={"collector/productDetail"} asChild>
+      <Link href={`collector/ProductDetail?id=${product.id}`} asChild>
         <TouchableOpacity onPress={OpenCamera}>
           <View style={styles.productItemContainer}>
             <View style={styles.textContainer}>
