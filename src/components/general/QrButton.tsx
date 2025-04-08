@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons"; // o react-native-vector-icons
+import { useRouter } from "expo-router";
 
 const QrButton = ({ id }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const handlePressIn = () => setIsPressed(true);
   const handlePressOut = () => setIsPressed(false);
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push(`/collector/QRCamera`);
+  };
 
   return (
     <View style={styles.buttonContainer}>
@@ -14,6 +20,7 @@ const QrButton = ({ id }) => {
         activeOpacity={0.8}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        onPress={handlePress}
         style={styles.container}
       >
         <View style={styles.outerBox}>

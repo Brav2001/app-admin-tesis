@@ -5,8 +5,11 @@ import MainCard from "@/components/MainCard";
 import CardInfo from "@/components/general/CardInfo";
 import { useLocalSearchParams } from "expo-router";
 import QrButton from "@/components/general/QrButton";
+import { useStore } from "@/utils/store";
+import { useEffect } from "react";
 
 const ProductDetail = () => {
+  const { qr, clearQR } = useStore();
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const id =
     paramId || "7"; /* redireccionar a la pantalla orderList si no exite el id*/
@@ -20,6 +23,14 @@ const ProductDetail = () => {
     level: "C3",
     basket: "D4",
   };
+
+  useEffect(() => {
+    if (qr) {
+      // Aquí puedes manejar el QR escaneado
+      console.log("QR escaneado:", qr);
+      clearQR(); // Limpia el QR después de usarlo
+    }
+  }, [qr, clearQR]);
   return (
     <View style={styles.container}>
       <MainCard title={""}>
