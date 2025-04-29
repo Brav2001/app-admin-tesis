@@ -1,6 +1,6 @@
 import { CameraView, useCameraPermissions, CameraType } from "expo-camera";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Button, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useStore } from "@/utils/store";
 
@@ -18,20 +18,14 @@ export default function ScanScreen() {
     }
   }, [permission]);
 
-  if (!permission) {
-    return <View />; // Mientras se carga la info de permisos
-  }
-
-  if (!permission.granted) {
-    return <View style={styles.container} />; // Pantalla vacía mientras se piden permisos
-  }
+  if (!permission) return <View />;
+  if (!permission.granted) return <View style={styles.container} />;
 
   const handleBarCodeScanned = ({ data }) => {
     if (scanned) return;
     setScanned(true);
-
-    setQR(data); // Guarda en el store
-    router.back(); // Vuelve a la pantalla anterior
+    setQR(data);
+    router.back();
   };
 
   return (
@@ -39,16 +33,18 @@ export default function ScanScreen() {
       <CameraView
         style={styles.camera}
         facing={facing}
-        barcodeScannerSettings={{
-          barcodeTypes: ["qr"],
-        }}
+        barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
         onBarcodeScanned={handleBarCodeScanned}
       >
+        <View style={styles.header}>
+          <Text style={styles.title}>Escanea el código QR</Text>
+        </View>
+
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>Volver</Text>
+          <Text style={styles.backButtonText}>Cancelar</Text>
         </TouchableOpacity>
       </CameraView>
     </View>
@@ -57,23 +53,48 @@ export default function ScanScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  message: {
-    textAlign: "center",
-    paddingBottom: 10,
-  },
-  camera: {
-    flex: 1,
-  },
-  backButton: {
+  camera: { flex: 1 },
+
+  // Mensaje superior
+  header: {
     position: "absolute",
     top: 50,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  title: {
+    color: "#fff",
+    fontSize: 30,
+    fontWeight: "600",
+    backgroundColor: "rgba(0,0,0,0.6)",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+
+  // Botón Volver
+  backButton: {
+    position: "absolute",
+    bottom: 50,
     left: 20,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: "#b00020",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   backButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 20,
+    fontWeight: "500",
   },
 });

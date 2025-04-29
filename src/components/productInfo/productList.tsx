@@ -1,8 +1,8 @@
-import React from "react";
+import { useEffect } from "react";
 import { StyleSheet, View, Text, FlatList } from "react-native";
 import ProductItem from "./productsItem";
-import theme from "../../utils/theme";
 import MainCard from "../MainCard";
+import { useRouter } from "expo-router";
 
 const products = [
   {
@@ -11,6 +11,7 @@ const products = [
     weigth: "1kg",
     image:
       "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
+    collected: true,
   },
   {
     id: "6",
@@ -18,6 +19,7 @@ const products = [
     weigth: "1kg",
     image:
       "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
+    collected: true,
   },
   {
     id: "7",
@@ -25,6 +27,7 @@ const products = [
     weigth: "1L",
     image:
       "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
+    collected: true,
   },
   {
     id: "8",
@@ -32,6 +35,7 @@ const products = [
     weigth: "1L",
     image:
       "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
+    collected: true,
   },
   {
     id: "9",
@@ -39,25 +43,42 @@ const products = [
     weigth: "1kg",
     image:
       "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
+    collected: false,
   },
 ];
 
 const ProductList = ({ id }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const allCollected = products.every((product) => product.collected);
+    if (allCollected) {
+      router.replace("/collector/OrderDelivery?id=" + id);
+    }
+  }, []);
   return (
-    <MainCard>
+    <View
+      style={{
+        width: "90%",
+        alignItems: "center",
+        justifyContent: "center",
+        marginHorizontal: "auto",
+      }}
+    >
       <FlatList
         data={products}
         renderItem={({ item }) => <ProductItem product={item} />}
         keyExtractor={(item) => item.id}
         style={styles.productList}
       />
-    </MainCard>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   productList: {
     width: "100%",
+    maxHeight: "90%",
   },
 });
 

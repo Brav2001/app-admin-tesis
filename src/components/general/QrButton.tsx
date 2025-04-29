@@ -3,7 +3,7 @@ import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons"; // o react-native-vector-icons
 import { useRouter } from "expo-router";
 
-const QrButton = ({ id }) => {
+const QrButton = () => {
   const [isPressed, setIsPressed] = useState(false);
 
   const handlePressIn = () => setIsPressed(true);

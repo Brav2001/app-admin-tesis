@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
-    marginVertical: 20,
+    marginVertical: 10,
     textAlign: "center",
   },
 });

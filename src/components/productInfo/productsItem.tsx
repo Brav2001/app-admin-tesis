@@ -2,29 +2,43 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { Link } from "expo-router";
 import theme from "../../utils/theme";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const ProductItem = ({ product }) => {
   const OpenCamera = () => {};
   return (
     <View style={styles.container}>
-      <Link href={`collector/ProductDetail?id=${product.id}`} asChild>
-        <TouchableOpacity onPress={OpenCamera}>
-          <View style={styles.productItemContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.productName}>{product.name}</Text>
-              <Text style={styles.productWeigth}>{product.weigth}</Text>
+      {!product.collected && (
+        <Link href={`collector/ProductDetail?id=${product.id}`} asChild>
+          <TouchableOpacity onPress={OpenCamera}>
+            <View style={styles.productItemContainer}>
+              <View style={styles.textContainer}>
+                <Text style={styles.productName}>{product.name}</Text>
+                <Text style={styles.productWeigth}>{product.weigth}</Text>
+              </View>
+              <View>
+                <Image
+                  source={{
+                    uri: product.image,
+                  }}
+                  style={{ width: 50, height: 50, borderRadius: 25 }}
+                />
+              </View>
             </View>
-            <View>
-              <Image
-                source={{
-                  uri: product.image,
-                }}
-                style={{ width: 50, height: 50, borderRadius: 25 }}
-              />
-            </View>
+          </TouchableOpacity>
+        </Link>
+      )}
+      {product.collected && (
+        <View style={styles.productItemCollected}>
+          <View style={styles.textContainer}>
+            <Text style={styles.productName}>{product.name}</Text>
+            <Text style={styles.productWeigth}>{product.weigth}</Text>
           </View>
-        </TouchableOpacity>
-      </Link>
+          <View>
+            <AntDesign name="checkcircle" size={50} color="white" />
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -38,6 +52,14 @@ const styles = StyleSheet.create({
   },
   productItemContainer: {
     backgroundColor: theme.colors.backgroundCards,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
+    borderRadius: 10,
+  },
+  productItemCollected: {
+    backgroundColor: theme.colors.backgroundMain,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
