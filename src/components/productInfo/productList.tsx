@@ -43,7 +43,7 @@ const products = [
     weigth: "1kg",
     image:
       "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
-    collected: false,
+    collected: true,
   },
 ];
 

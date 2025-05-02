@@ -3,13 +3,17 @@ import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import QrButton from "@/components/general/QrButton";
 import MainCard from "@/components/MainCard";
+import { useLocalSearchParams } from "expo-router";
 
 const data = {
   id: "1",
   basket: "1",
 };
 
-const OrderDelivery = ({ id }) => {
+const OrderDelivery = () => {
+  //recibimos el id por query params
+  const { id: paramId } = useLocalSearchParams<{ id: string }>();
+  const id = paramId || "7";
   return (
     <View style={styles.container}>
       <MainCard title={""}>
@@ -24,7 +28,9 @@ const OrderDelivery = ({ id }) => {
             </View>
           </View>
         </View>
-        <QrButton />
+        <View style={styles.qrContainer}>
+          <QrButton />
+        </View>
       </MainCard>
     </View>
   );
@@ -37,6 +43,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: theme.colors.backgroundMain,
     paddingHorizontal: 15,
+    paddingBottom: 20,
   },
   titleView: {
     fontSize: theme.fonts.sizes.bigtitle,
@@ -76,6 +83,12 @@ const styles = StyleSheet.create({
 
   textContainer: {
     marginRight: 5,
+  },
+
+  qrContainer: {
+    flexGrow: 1, // Hace que el contenedor QR ocupe el espacio restante y empuje el botón al final
+    justifyContent: "flex-end", // Asegura que el botón esté al final
+    alignItems: "center", // Centra el botón
   },
 });
 

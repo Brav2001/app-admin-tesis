@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: "auto",
     paddingVertical: 15,
+    flex: 1,
   },
   title: {
     fontFamily: theme.fonts.main,
