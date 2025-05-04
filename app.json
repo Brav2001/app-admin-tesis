@@ -14,9 +14,17 @@
       "backgroundColor": "#00000"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "process.env.IOS_MAP_API_KEY"
+      }
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "process.env.ANDROID_MAP_API_KEY"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
