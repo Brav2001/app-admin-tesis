@@ -41,7 +41,7 @@ const Main = () => {
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <SafeAreaView style={styles.containerSafe}>
-        {!logged && <OrdersList />}
+        {!logged && <DeliveryList />}
         {dataStaff?.Rol?.name === "PACKER" && logged && <OrdersCollector />}
       </SafeAreaView>
     </View>
