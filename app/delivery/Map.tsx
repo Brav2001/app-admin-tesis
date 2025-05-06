@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import MainCard from "@/components/MainCard";
 import MapView, { Marker } from "react-native-maps";
 
-const { width, height } = Dimensions.get("window");
+// const { width, height } = Dimensions.get("window");
 const data = [
   {
     id: "12345",
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 
   map: {
     width: "100%",
-    height: height * 0.4, // Ajusta este valor si deseas más o menos espacio
+    aspectRatio: 1 / 1.7, // Ajusta este valor si deseas más o menos espacio
     borderRadius: 12,
     overflow: "hidden",
   },
