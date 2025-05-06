@@ -5,8 +5,53 @@ import MainCard from "@/components/MainCard";
 import MapView, { Marker } from "react-native-maps";
 
 const { width, height } = Dimensions.get("window");
-
+const data = [
+  {
+    id: "12345",
+    address: "Calle 19A #9-08",
+    receptor: "Juan",
+    numberPhone: "3160435877",
+    isValidate: false,
+    indication: "calle ciega",
+    latitude: 3131123,
+    longitude: 21321321,
+  },
+  {
+    id: "12346",
+    address: "Calle 19A #9-08",
+    receptor: "Juan",
+    numberPhone: "3160435877",
+    isValidate: false,
+    indication: "calle ciega",
+    latitude: 3131123,
+    longitude: 21321321,
+  },
+  {
+    id: "12347",
+    address: "Calle 19A #9-08",
+    receptor: "Juan",
+    numberPhone: "3160435877",
+    isValidate: false,
+    indication: "calle ciega",
+    latitude: 3131123,
+    longitude: 21321321,
+  },
+  {
+    id: "12348",
+    address: "Calle 19A #9-08",
+    receptor: "Juan",
+    numberPhone: "3160435877",
+    isValidate: false,
+    indication: "calle ciega",
+    latitude: 3131123,
+    longitude: 21321321,
+  },
+];
 const Map = () => {
+  const handleMarkerPress = (id) => {
+    console.log(`Marcador con ID ${id} presionado`);
+  };
+
   return (
     <View style={styles.container}>
       <MainCard title={""}>
