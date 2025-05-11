@@ -8,7 +8,6 @@ const orders = [
   { id: "1024", orderNumber: "34565778", time: "25 minutos" },
   { id: "2024", orderNumber: "34565778", time: "25 minutos" },
   { id: "3024", orderNumber: "34565778", time: "25 minutos" },
-  { id: "4024", orderNumber: "34565778", time: "25 minutos" },
 ];
 
 const OrderList = () => {

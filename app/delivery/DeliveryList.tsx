@@ -3,12 +3,14 @@ import Header from "@/components/ordersInfo/HeaderCard";
 import UserInfo from "@/components/ordersInfo/UserInfo";
 import OrderList from "@/components/ordersInfo/OrdersList";
 import MapButton from "@/components/general/MapButton";
+import IsAvailableSwitch from "@/components/general/IsAvalaibleSwitch";
 
 const DeliveryList = () => {
   return (
     <View style={styles.container}>
       <Header />
       <UserInfo />
+      <IsAvailableSwitch />
       <OrderList />
       <MapButton />
     </View>

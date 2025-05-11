@@ -13,38 +13,28 @@ const data = [
     numberPhone: "3160435877",
     isValidate: false,
     indication: "calle ciega",
-    latitude: 3131123,
-    longitude: 21321321,
+    latitude: 8.229234260676808,
+    longitude: -73.34841776783851,
   },
   {
     id: "12346",
-    address: "Calle 19A #9-08",
-    receptor: "Juan",
+    address: "Parque central",
+    receptor: "Un man",
     numberPhone: "3160435877",
     isValidate: false,
-    indication: "calle ciega",
-    latitude: 3131123,
-    longitude: 21321321,
+    indication: "en el parque",
+    latitude: 8.235429733004436,
+    longitude: -73.35387872339746,
   },
   {
     id: "12347",
-    address: "Calle 19A #9-08",
-    receptor: "Juan",
+    address: "Cancha del marabel",
+    receptor: "Otro man",
     numberPhone: "3160435877",
     isValidate: false,
     indication: "calle ciega",
-    latitude: 3131123,
-    longitude: 21321321,
-  },
-  {
-    id: "12348",
-    address: "Calle 19A #9-08",
-    receptor: "Juan",
-    numberPhone: "3160435877",
-    isValidate: false,
-    indication: "calle ciega",
-    latitude: 3131123,
-    longitude: 21321321,
+    latitude: 8.246368251818762,
+    longitude: -73.35775388858092,
   },
 ];
 const Map = () => {
@@ -66,11 +56,18 @@ const Map = () => {
             longitudeDelta: 0.05,
           }}
         >
-          <Marker
-            coordinate={{ latitude: 4.60971, longitude: -74.08175 }}
-            title="Ubicación de ejemplo"
-            description="Aquí puedes poner más info"
-          />
+          {data.map((item) => (
+            <Marker
+              key={item.id}
+              coordinate={{
+                latitude: item.latitude,
+                longitude: item.longitude,
+              }}
+              title={item.receptor}
+              description={item.address}
+              onPress={() => handleMarkerPress(item.id)}
+            />
+          ))}
         </MapView>
       </MainCard>
     </View>
