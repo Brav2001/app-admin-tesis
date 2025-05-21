@@ -8,6 +8,7 @@ import {
   Animated,
   Easing,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useStore } from "@/utils/store";
 import theme from "@/utils/theme";
@@ -65,7 +66,7 @@ export default function ScanScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <CameraView
         style={styles.camera}
         facing={facing}
@@ -129,7 +130,7 @@ export default function ScanScreen() {
           </TouchableOpacity>
         </View>
       </CameraView>
-    </View>
+    </SafeAreaView>
   );
 }
 

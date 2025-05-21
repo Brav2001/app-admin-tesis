@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const DeliveryDetail = () => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={{ color: "white" }}>Delivery Detail</Text>
-    </View>
+    </SafeAreaView>
   );
 };
 

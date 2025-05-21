@@ -1,4 +1,5 @@
 import { View, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import QrButton from "@/components/general/QrButton";
@@ -15,7 +16,7 @@ const OrderDelivery = () => {
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const id = paramId || "7";
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <MainCard title={""}>
         <HeaderContainerCard id={id} />
         <Text style={styles.titleView}>Detalles de la entrega</Text>
@@ -32,7 +33,7 @@ const OrderDelivery = () => {
           <QrButton />
         </View>
       </MainCard>
-    </View>
+    </SafeAreaView>
   );
 };
 

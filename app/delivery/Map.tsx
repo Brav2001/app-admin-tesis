@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import MainCard from "@/components/MainCard";
@@ -94,6 +95,7 @@ const Map = () => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [orderedPoints, setOrderedPoints] = useState([]);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [selectedPoint, setSelectedPoint] = useState(null);
 
   const handleGetLocation = async () => {
     try {
@@ -139,58 +141,83 @@ const Map = () => {
     handleGetLocation();
   }, []);
 
-  const handleMarkerPress = (id: string) => {
-    console.log(`Marcador con ID ${id} presionado`);
+  const handleMarkerPress = (item: object) => {
+    setSelectedPoint(item);
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <MainCard title={""}>
-        <HeaderContainerCard id={""} />
-        <Text style={styles.titleView}>MAPA</Text>
+        <HeaderContainerCard id={selectedPoint?.id || ""} />
+        {
+          //vamos a mostrar el detalle del punto seleccionado ( direccion, receptor, telefono)
+          selectedPoint && (
+            <View>
+              <Text style={styles.detailText}>
+                Dirección: {selectedPoint.address}
+              </Text>
+              <Text style={styles.detailText}>
+                Receptor: {selectedPoint.receptor}
+              </Text>
+              <Text style={styles.detailText}>
+                Teléfono: {selectedPoint.numberPhone}
+              </Text>
+              <Text style={styles.detailText}>
+                Indicación: {selectedPoint.indication}
+              </Text>
+            </View>
+          )
+        }
 
-        {loading && <Text>Cargando...</Text>}
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text style={styles.loadingText}>Cargando ruta...</Text>
+          </View>
+        )}
         {!loading && (
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: latitude,
-              longitude: longitude,
-              latitudeDelta: 0.03,
-              longitudeDelta: 0.03,
-            }}
-          >
-            {orderedPoints.map((item) => (
+          <View style={styles.containerMap}>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: latitude,
+                longitude: longitude,
+                latitudeDelta: 0.03,
+                longitudeDelta: 0.03,
+              }}
+            >
+              {orderedPoints.map((item) => (
+                <Marker
+                  key={item.id}
+                  coordinate={{
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                  }}
+                  title={item.receptor}
+                  description={item.address}
+                  onPress={() => handleMarkerPress(item)}
+                />
+              ))}
+
               <Marker
-                key={item.id}
-                coordinate={{
-                  latitude: item.latitude,
-                  longitude: item.longitude,
-                }}
-                title={item.receptor}
-                description={item.address}
-                onPress={() => handleMarkerPress(item.id)}
+                coordinate={{ latitude, longitude }}
+                title={"Ubicación Actual"}
+                pinColor={"#00FF00"}
+                description={"Ubicación actual"}
               />
-            ))}
 
-            <Marker
-              coordinate={{ latitude, longitude }}
-              title={"Ubicación Actual"}
-              pinColor={"#00FF00"}
-              description={"Ubicación actual"}
-            />
-
-            {routeCoordinates.length > 0 && (
-              <Polyline
-                coordinates={routeCoordinates}
-                strokeWidth={4}
-                strokeColor="#007AFF"
-              />
-            )}
-          </MapView>
+              {routeCoordinates.length > 0 && (
+                <Polyline
+                  coordinates={routeCoordinates}
+                  strokeWidth={4}
+                  strokeColor="#007AFF"
+                />
+              )}
+            </MapView>
+          </View>
         )}
       </MainCard>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -211,11 +238,42 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  map: {
+  containerMap: {
+    flex: 1,
     width: "100%",
-    aspectRatio: 1 / 1.7, // Ajusta este valor si deseas más o menos espacio
     borderRadius: 12,
     overflow: "hidden",
+    marginTop: 20,
+    marginRight: 0,
+  },
+
+  map: {
+    flex: 1,
+    width: "100%", // Ajusta este valor si deseas más o menos espacio
+  },
+
+  detailText: {
+    fontSize: theme.fonts.sizes.subtitle,
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    backgroundColor: theme.colors.backgroundMain,
+    borderRadius: 12,
+    marginTop: 20,
+    padding: 20,
+  },
+
+  loadingText: {
+    marginTop: 10,
+    fontSize: theme.fonts.sizes.subtitle,
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 

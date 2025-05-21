@@ -79,7 +79,7 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 15,
+    marginTop: 0,
   },
   headerContainer: {
     flexDirection: "row",

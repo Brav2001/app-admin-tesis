@@ -1,4 +1,5 @@
 import { View, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import ProductList from "@/components/productInfo/productList";
@@ -12,14 +13,14 @@ const OrdersDetail = () => {
   const time = 30;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <MainCard title={""}>
         <HeaderContainerCard id={id} />
         <Text style={styles.titleView}>Detalles del pedido</Text>
         <ProductList id={id} />
         <Text style={styles.time}>{time} minutos</Text>
       </MainCard>
-    </View>
+    </SafeAreaView>
   );
 };
 

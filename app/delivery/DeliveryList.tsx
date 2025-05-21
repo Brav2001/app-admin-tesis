@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Header from "@/components/ordersInfo/HeaderCard";
 import UserInfo from "@/components/ordersInfo/UserInfo";
 import OrderList from "@/components/ordersInfo/OrdersList";

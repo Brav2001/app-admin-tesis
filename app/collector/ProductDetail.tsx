@@ -1,4 +1,5 @@
 import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import MainCard from "@/components/MainCard";
@@ -32,7 +33,7 @@ const ProductDetail = () => {
     }
   }, [qr, clearQR]);
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <MainCard title={""}>
         <HeaderContainerCard id={id} />
         <Text style={styles.titleView}>Detalles del producto</Text>
@@ -44,9 +45,9 @@ const ProductDetail = () => {
           <Text style={styles.infoText}>Nivel: {data.level}</Text>
           <Text style={styles.infoText}>Canasta: {data.basket}</Text>
         </CardInfo>
-        <QrButton id={id} />
+        <QrButton />
       </MainCard>
-    </View>
+    </SafeAreaView>
   );
 };
 

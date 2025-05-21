@@ -1,5 +1,6 @@
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Link } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import Login from "./auth/Login";
 import OrdersCollector from "@/views/orders/OrdersCollector";
