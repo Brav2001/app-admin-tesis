@@ -196,6 +196,15 @@ const Map = () => {
                   title={item.receptor}
                   description={item.address}
                   onPress={() => handleMarkerPress(item)}
+                  image={require("../../assets/pin.png")}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    overflow: "hidden",
+                    borderWidth: 2,
+                    borderColor: "#007AFF",
+                  }}
                 />
               ))}
 
