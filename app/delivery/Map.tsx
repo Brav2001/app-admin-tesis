@@ -1,13 +1,21 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
-import MainCard from "@/components/MainCard";
+import MapsCard from "@/components/general/MapsCard";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import PolylineDecoder from "@mapbox/polyline";
 import Constants from "expo-constants";
+import { FontAwesome } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 const GOOGLE_API_KEY = Constants.expoConfig?.extra?.MAP_API_KEY;
 
@@ -145,30 +153,56 @@ const Map = () => {
     setSelectedPoint(item);
   };
 
+  const link = `delivery/DeliveryDetail?id=${selectedPoint?.id || ""}`;
+
   return (
     <SafeAreaView style={styles.container}>
-      <MainCard title={""}>
+      <MapsCard title={""}>
         <HeaderContainerCard id={selectedPoint?.id || ""} />
-        {
-          //vamos a mostrar el detalle del punto seleccionado ( direccion, receptor, telefono)
-          selectedPoint && (
-            <View>
-              <Text style={styles.detailText}>
-                Dirección: {selectedPoint.address}
-              </Text>
-              <Text style={styles.detailText}>
-                Receptor: {selectedPoint.receptor}
-              </Text>
-              <Text style={styles.detailText}>
-                Teléfono: {selectedPoint.numberPhone}
-              </Text>
-              <Text style={styles.detailText}>
-                Indicación: {selectedPoint.indication}
-              </Text>
-            </View>
-          )
-        }
+      </MapsCard>
 
+      {selectedPoint && (
+        <MapsCard title={""}>
+          <Link href={link} asChild>
+            <TouchableOpacity>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.containerTextDetail}>
+                    <Text style={styles.detailTextTitle}>Dirección:</Text>
+                    <Text style={styles.detailText}>
+                      {selectedPoint.address}
+                    </Text>
+                  </View>
+                  <View style={styles.containerTextDetail}>
+                    <Text style={styles.detailTextTitle}>Receptor:</Text>
+                    <Text style={styles.detailText}>
+                      {selectedPoint.receptor}
+                    </Text>
+                  </View>
+                  <View style={styles.containerTextDetail}>
+                    <Text style={styles.detailTextTitle}>Teléfono:</Text>
+                    <Text style={styles.detailText}>
+                      {selectedPoint.numberPhone}
+                    </Text>
+                  </View>
+                  <View style={styles.containerTextDetail}>
+                    <Text style={styles.detailTextTitle}>Indicación:</Text>
+                    <Text style={styles.detailText}>
+                      {selectedPoint.indication}
+                    </Text>
+                  </View>
+                </View>
+                <View style={{ justifyContent: "center" }}>
+                  <Text style={styles.orderButtonText}>
+                    <FontAwesome name="arrow-right" size={30} color="#FFFFFF" />
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </Link>
+        </MapsCard>
+      )}
+      <MapsCard title={""} style={{ flex: 1 }}>
         {loading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#fff" />
@@ -225,7 +259,7 @@ const Map = () => {
             </MapView>
           </View>
         )}
-      </MainCard>
+      </MapsCard>
     </SafeAreaView>
   );
 };
@@ -252,7 +286,6 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 12,
     overflow: "hidden",
-    marginTop: 20,
     marginRight: 0,
   },
 
@@ -260,9 +293,19 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%", // Ajusta este valor si deseas más o menos espacio
   },
-
+  containerTextDetail: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 2,
+  },
+  detailTextTitle: {
+    fontSize: 15,
+    color: "#fff",
+    fontWeight: "medium",
+    marginRight: 5,
+  },
   detailText: {
-    fontSize: theme.fonts.sizes.subtitle,
+    fontSize: 17,
     color: "#fff",
     fontWeight: "bold",
   },
@@ -273,7 +316,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: theme.colors.backgroundMain,
     borderRadius: 12,
-    marginTop: 20,
     padding: 20,
   },
 
@@ -283,6 +325,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  orderButtonText: {
+    color: theme.colors.textPrimary,
+    fontSize: 16,
   },
 });
 

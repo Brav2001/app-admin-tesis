@@ -16,10 +16,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 15,
+    padding: 0,
   },
   textId: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     color: "#fff",
   },

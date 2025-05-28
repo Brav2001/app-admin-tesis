@@ -8,14 +8,13 @@ const BackButton = () => {
 
   return (
     <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-      <AntDesign name="caretleft" size={32} color="white" />
+      <AntDesign name="caretleft" size={28} color="white" />
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    padding: 10,
     backgroundColor: "transparent",
     borderRadius: 8,
     alignSelf: "flex-start",
