@@ -4,7 +4,7 @@ import theme from "../../utils/theme";
 import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useStore } from "../../utils/store";
 
-const UserInfo = () => {
+const UserInfo = ({ ordersLength }) => {
   const [dataStaff] = useStore((state) => [state.dataStaff]);
   return (
     <View style={styles.userInfoContainer}>
@@ -20,7 +20,7 @@ const UserInfo = () => {
           size={38}
           color="#FFFFFF"
         />
-        <Text style={styles.infoText}>15</Text>
+        <Text style={styles.infoText}>{ordersLength}</Text>
       </View>
     </View>
   );

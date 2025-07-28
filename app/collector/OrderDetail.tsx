@@ -8,16 +8,22 @@ import { useLocalSearchParams } from "expo-router";
 
 const OrdersDetail = () => {
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
+  const { time: paramTime } = useLocalSearchParams<{ time: string }>();
   const id =
     paramId || "7"; /* redireccionar a la pantalla orderList si no exite el id*/
-  const time = 30;
+  const time =
+    paramTime ||
+    "0"; /* redireccionar a la pantalla orderList si no exite el time*/
 
   return (
     <SafeAreaView style={styles.container}>
       <MainCard title={""}>
-        <HeaderContainerCard id={id} />
-        <Text style={styles.titleView}>Detalles del pedido</Text>
-        <ProductList id={id} />
+        <View style={styles.containerList}>
+          <HeaderContainerCard id={id} />
+          <Text style={styles.titleView}>Detalles del pedido</Text>
+          <ProductList id={id} />
+        </View>
+
         <Text style={styles.time}>{time} minutos</Text>
       </MainCard>
     </SafeAreaView>
@@ -31,6 +37,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: theme.colors.backgroundMain,
     paddingHorizontal: 15,
+  },
+  containerList: {
+    width: "100%",
+    flex: 1,
+    alignItems: "center",
   },
   titleView: {
     fontSize: theme.fonts.sizes.bigtitle,

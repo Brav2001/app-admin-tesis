@@ -1,13 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import theme from "../../utils/theme";
 import { Feather, Ionicons, FontAwesome } from "@expo/vector-icons";
+import { retrieveRol } from "@/utils/storageAuth";
 
 const OrderItem = ({ order }) => {
-  const linkCollector = `collector/OrderDetail?id=${order.id}`;
-  const linkDelivery = `delivery/DeliveryDetail?id=${order.id}`;
-  const link = linkDelivery;
+  const [link, setLink] = useState("");
+  useEffect(() => {
+    const getLink = async () => {
+      const rol = await retrieveRol();
+      const link =
+        rol === "PACKER"
+          ? `collector/OrderDetail?id=${order.id}&time=${order.time}`
+          : `delivery/DeliveryDetail?id=${order.id}&time=${order.time}`;
+
+      setLink(link);
+    };
+
+    getLink();
+  }, [order]);
 
   return (
     <View style={styles.container}>

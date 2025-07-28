@@ -1,60 +1,50 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View, Text, FlatList } from "react-native";
 import ProductItem from "./productsItem";
-import MainCard from "../MainCard";
 import { useRouter } from "expo-router";
-
-const products = [
-  {
-    id: "5",
-    name: "Papa",
-    weigth: "1kg",
-    image:
-      "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
-    collected: true,
-  },
-  {
-    id: "6",
-    name: "Carne",
-    weigth: "1kg",
-    image:
-      "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
-    collected: true,
-  },
-  {
-    id: "7",
-    name: "Leche",
-    weigth: "1L",
-    image:
-      "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
-    collected: true,
-  },
-  {
-    id: "8",
-    name: "Jugo",
-    weigth: "1L",
-    image:
-      "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
-    collected: true,
-  },
-  {
-    id: "9",
-    name: "Arroz",
-    weigth: "1kg",
-    image:
-      "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
-    collected: true,
-  },
-];
+import { retrieveToken } from "@/utils/storageAuth";
+import api from "@/utils/api.js";
+import axios from "axios";
 
 const ProductList = ({ id }) => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const allCollected = products.every((product) => product.collected);
-    if (allCollected) {
-      router.replace("/collector/OrderDelivery?id=" + id);
-    }
+    const fetchProducts = async () => {
+      try {
+        const token = await retrieveToken();
+        const response = await axios.get(api.getOrderProductAllDetail(id), {
+          headers: {
+            "auth-token": token,
+          },
+        });
+
+        const data = response.data;
+
+        const parsed = data.map((product) => ({
+          id: product.id,
+          name: product.Product.name,
+          weigth: `${product.weight} gr`,
+          image:
+            product.image ||
+            "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
+          collected: product.Order_Product_Basket.isCollected,
+        }));
+
+        const allCollected = parsed.every((product) => product.collected);
+        if (allCollected) {
+          router.replace("/collector/OrderDelivery?id=" + id);
+        }
+        setProducts(parsed);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
   }, []);
   return (
     <View
@@ -63,6 +53,7 @@ const ProductList = ({ id }) => {
         alignItems: "center",
         justifyContent: "center",
         marginHorizontal: "auto",
+        flex: 1,
       }}
     >
       <FlatList

@@ -5,7 +5,7 @@ const HeaderContainerCard = ({ id }) => {
   return (
     <View style={styles.headerContainer}>
       <BackButton />
-      <Text style={styles.textId}>{id}</Text>
+      <Text style={styles.textId}>{id.slice(-6).toUpperCase()}</Text>
     </View>
   );
 };

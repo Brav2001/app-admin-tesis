@@ -1,7 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
 export const storeData = async (data) => {
-  console.log("Data recibida:", data);
   try {
     await SecureStore.setItemAsync("authToken", data.token);
     await SecureStore.setItemAsync("authId", data.Staff.id);
@@ -30,7 +29,7 @@ export const retrieveRol = async () => {
   try {
     const rol = await SecureStore.getItemAsync("authRol");
     if (rol) {
-      console.log("Rol recuperado:", rol);
+      return rol;
     } else {
       console.log("No se encontró ningún Rol almacenado");
     }
@@ -43,7 +42,7 @@ export const retrieveId = async () => {
   try {
     const id = await SecureStore.getItemAsync("authId");
     if (id) {
-      console.log("Id recuperado:", id);
+      return id;
     } else {
       console.log("No se encontró ningún Id almacenado");
     }
@@ -56,7 +55,7 @@ export const retrieveToken = async () => {
   try {
     const token = await SecureStore.getItemAsync("authToken");
     if (token) {
-      console.log("Token recuperado:", token);
+      return token;
     } else {
       console.log("No se encontró ningún token almacenado");
     }

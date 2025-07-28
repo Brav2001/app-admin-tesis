@@ -4,6 +4,8 @@ export const useStore = create((set) => ({
   logged: false,
   dataStaff: null,
   qr: null,
+  time: null,
+  setTime: (time) => set({ time }),
   ChangeLogged: (value) => set((state) => ({ logged: value })),
   ChangeDataStaff: (value) => set((state) => ({ dataStaff: value })),
   setQR: (data) => set({ qr: data }),

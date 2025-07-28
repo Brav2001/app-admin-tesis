@@ -4,13 +4,7 @@ import OrderItem from "./OrderItem";
 import theme from "../../utils/theme";
 import MainCard from "../MainCard";
 
-const orders = [
-  { id: "1024", orderNumber: "34565778", time: "25 minutos" },
-  { id: "2024", orderNumber: "34565778", time: "25 minutos" },
-  { id: "3024", orderNumber: "34565778", time: "25 minutos" },
-];
-
-const OrderList = () => {
+const OrderList = ({ orders }) => {
   return (
     <MainCard title={"PENDIENTES"}>
       <FlatList

@@ -9,6 +9,7 @@ import { storeData } from "../../utils/storageAuth";
 import { Formik, useField } from "formik";
 import loginSchema from "../../schemas/auth.schema";
 import FormikInputValue from "./FormikInputValue";
+import Toast from "react-native-toast-message";
 
 const initialValues = {
   email: "",
@@ -26,13 +27,18 @@ const LoginForm = () => {
     axios
       .post(api.auth, { email: values.email, password: values.password })
       .then(async (res) => {
+        await storeData(res.data);
         ChangeLogged(true);
         ChangeDataStaff(res.data.Staff);
-        await storeData(res.data);
       })
-      .catch(
-        (err) => console.log(err) //manejar errores con una alerta
-      );
+      .catch((err) => {
+        console.log("fdsf", err);
+        Toast.show({
+          type: "error",
+          text1: "Credenciales incorrectas",
+          text2: "Verifica tus credenciales e inténtalo de nuevo.",
+        });
+      });
   };
 
   return (
