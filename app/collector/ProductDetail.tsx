@@ -40,7 +40,7 @@ const ProductDetail = () => {
           name: product.Product.name,
           weigth: `${product.weight} gr`,
           image:
-            product.image ||
+            product.Product.image ||
             "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
           aisle: product.Order_Product_Basket.Basket.Level.Shelve.Aisle.number,
           shelve: product.Order_Product_Basket.Basket.Level.Shelve.number,
@@ -65,6 +65,15 @@ const ProductDetail = () => {
 
   useEffect(() => {
     if (qr && basket && opb) {
+      if (qr !== basket) {
+        Toast.show({
+          type: "error",
+          text1: "Código QR no coincide",
+          text2: "Por favor, escanea el código QR correcto.",
+        });
+        clearQR();
+        return;
+      }
       axios
         .patch(api.collectProductOrder(opb), {
           headers: {

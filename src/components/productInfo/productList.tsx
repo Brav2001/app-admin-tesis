@@ -28,7 +28,7 @@ const ProductList = ({ id }) => {
           name: product.Product.name,
           weigth: `${product.weight} gr`,
           image:
-            product.image ||
+            product.Product.image ||
             "https://olimpica.vtexassets.com/arquivos/ids/765776-800-450?v=637806525173900000&width=800&height=450&aspect=true",
           collected: product.Order_Product_Basket.isCollected,
         }));
