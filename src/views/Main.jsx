@@ -50,16 +50,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 15,
-    backgroundColor: theme.colors.backgroundMain,
   },
   containerSafe: {
     width: "100%",
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 15,
-    backgroundColor: theme.colors.backgroundMain,
   },
 });
 

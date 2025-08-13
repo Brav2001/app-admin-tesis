@@ -24,7 +24,7 @@ const OrdersDetail = () => {
           <ProductList id={id} />
         </View>
 
-        <Text style={styles.time}>{time} minutos</Text>
+        <Text style={styles.time}>{time}</Text>
       </MainCard>
     </SafeAreaView>
   );
