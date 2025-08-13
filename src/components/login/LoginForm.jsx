@@ -24,6 +24,7 @@ const LoginForm = () => {
 
   const handleLogin = (values) => {
     //validar datos antes de hacer login
+
     axios
       .post(api.auth, { email: values.email, password: values.password })
       .then(async (res) => {

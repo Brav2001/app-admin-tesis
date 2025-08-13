@@ -1,15 +1,20 @@
 const DOMAIN = process.env.EXPO_PUBLIC_DOMAIN;
-const PORT = process.env.EXPO_PUBLIC_PORT;
 const api = {
-  auth: `${DOMAIN}${PORT}/authStaff/loginMobile`,
+  auth: `${DOMAIN}/authStaff/loginMobile`,
   getOrderByCollector: (id) =>
-    `${DOMAIN}${PORT}/order_staff/getOrdersByCollector/${id}`,
+    `${DOMAIN}/order_staff/getOrdersByCollector/${id}`,
   getOrderProductAllDetail: (id) =>
-    `${DOMAIN}${PORT}/order_product/getProductsByOrderId/${id}`,
+    `${DOMAIN}/order_product/getProductsByOrderId/${id}`,
   getOneOrderProductDetail: (id) =>
-    `${DOMAIN}${PORT}/order_product/getOneProductByOrderId/${id}`,
+    `${DOMAIN}/order_product/getOneProductByOrderId/${id}`,
   collectProductOrder: (id) =>
-    `${DOMAIN}${PORT}/order_product_basket/collectProductFromBasket/${id}`,
+    `${DOMAIN}/order_product_basket/collectProductFromBasket/${id}`,
+  getDeliveryInformation: (id) =>
+    `${DOMAIN}/order_staff/getDeliveryInformation/${id}`,
+  releaseCollector(id) {
+    return `${DOMAIN}/order_staff/releaseCollector/${id}`;
+  },
+  getOrdersByCourier: (id) => `${DOMAIN}/order_staff/getOrdersByCourier/${id}`,
 };
 
 export default api;

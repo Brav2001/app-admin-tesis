@@ -21,6 +21,7 @@ const OrdersCollector = () => {
             "auth-token": token,
           },
         });
+
         const data = response.data;
 
         const parsed = data.map((order) => ({
@@ -38,6 +39,10 @@ const OrdersCollector = () => {
     };
 
     fetchOrders();
+
+    const intervalId = setInterval(fetchOrders, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return (

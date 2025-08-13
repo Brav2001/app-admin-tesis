@@ -18,13 +18,13 @@ export default {
     ios: {
       supportsTablet: true,
       config: {
-        googleMapsApiKey: "process.env.IOS_MAP_API_KEY",
+        googleMapsApiKey: "AIzaSyA4dh2L9NbnjEyPEMqhnZpM23OmCEwucSY",
       },
     },
     android: {
       config: {
         googleMaps: {
-          apiKey: "process.env.ANDROID_MAP_API_KEY",
+          apiKey: "AIzaSyA4dh2L9NbnjEyPEMqhnZpM23OmCEwucSY",
         },
       },
       adaptiveIcon: {

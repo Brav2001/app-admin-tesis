@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Login from "./auth/Login";
 import OrdersCollector from "@/views/orders/OrdersCollector";
-import OrdersList from "./collector/OrderList";
 import DeliveryList from "./delivery/DeliveryList";
 import theme from "@/utils/theme";
 
@@ -44,6 +43,7 @@ const Main = () => {
       <SafeAreaView style={styles.containerSafe}>
         {!logged && <Login />}
         {dataStaff?.Rol?.name === "PACKER" && logged && <OrdersCollector />}
+        {dataStaff?.Rol?.name === "COURIER" && logged && <DeliveryList />}
       </SafeAreaView>
     </View>
   );
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-
     backgroundColor: theme.colors.backgroundMain,
   },
 });

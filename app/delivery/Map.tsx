@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import MapsCard from "@/components/general/MapsCard";
-import MapView, { Marker, Polyline } from "react-native-maps";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import PolylineDecoder from "@mapbox/polyline";
 import Constants from "expo-constants";
@@ -212,6 +212,7 @@ const Map = () => {
         {!loading && (
           <View style={styles.containerMap}>
             <MapView
+              provider={PROVIDER_GOOGLE}
               style={styles.map}
               initialRegion={{
                 latitude: latitude,
