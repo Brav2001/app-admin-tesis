@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -7,18 +7,19 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import theme from "@/utils/theme.js";
-import HeaderContainerCard from "@/components/general/HeaderContainerCard";
-import MapsCard from "@/components/general/MapsCard";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import { WebView } from "react-native-webview";
 import * as Location from "expo-location";
-import PolylineDecoder from "@mapbox/polyline";
 import Constants from "expo-constants";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 
+import theme from "@/utils/theme.js";
+import HeaderContainerCard from "@/components/general/HeaderContainerCard";
+import MapsCard from "@/components/general/MapsCard";
+
 const GOOGLE_API_KEY = Constants.expoConfig?.extra?.MAP_API_KEY;
 
+// === Tus datos de ejemplo ===
 const data = [
   {
     id: "12345",
@@ -52,64 +53,175 @@ const data = [
   },
 ];
 
-const sortByDistance = (lat, lon, points) => {
+// Orden rápido por distancia euclidiana (suficiente para demo)
+const sortByDistance = (lat: number, lon: number, points: typeof data) => {
   return points
-    .map((point) => ({
-      ...point,
-      distance: Math.sqrt(
-        Math.pow(point.latitude - lat, 2) + Math.pow(point.longitude - lon, 2)
-      ),
+    .map((p) => ({
+      ...p,
+      distance: Math.hypot(p.latitude - lat, p.longitude - lon),
     }))
     .sort((a, b) => a.distance - b.distance);
 };
 
-const getGoogleRoute = async (origin, waypoints, destination) => {
-  try {
-    const waypointsStr = waypoints
-      .map((point) => `${point.latitude},${point.longitude}`)
-      .join("|");
+// HTML del mapa (Google Maps JS + Directions)
+const buildMapHtml = ({
+  apiKey,
+  origin,
+  waypoints,
+  destination,
+  points,
+}: {
+  apiKey: string;
+  origin: { latitude: number; longitude: number } | null;
+  waypoints: Array<{ latitude: number; longitude: number }>;
+  destination: { latitude: number; longitude: number } | null;
+  points: typeof data;
+}) => {
+  // serializamos datos para JS del WebView
+  const jsPoints = JSON.stringify(points);
+  const jsOrigin = JSON.stringify(origin);
+  const jsDestination = JSON.stringify(destination);
+  const jsWaypoints = JSON.stringify(waypoints);
 
-    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&waypoints=${waypointsStr}&key=${GOOGLE_API_KEY}`;
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <style>
+    html, body, #map { height: 100%; margin: 0; padding: 0; }
+    .gmnoprint a, .gmnoprint span, .gm-style-cc { display: none; }
+  </style>
+  <script>
+    // Envía errores a RN para depurar
+    window.onerror = function(msg, url, line, col, err){
+      if(window.ReactNativeWebView){
+        window.ReactNativeWebView.postMessage(JSON.stringify({type:'error', msg, url, line, col}));
+      }
+    };
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=${apiKey}"></script>
+</head>
+<body>
+  <div id="map"></div>
 
-    console.log("URL de la API de Google Maps:", url);
-    const response = await fetch(url);
-    const json = await response.json();
+  <script>
+    const RNW = window.ReactNativeWebView;
+    const points = ${jsPoints};
+    const origin = ${jsOrigin};
+    const destination = ${jsDestination};
+    const waypoints = ${jsWaypoints};
 
-    console.log(json);
+    function toLatLng(p){ return {lat: p.latitude, lng: p.longitude}; }
 
-    if (json.routes.length) {
-      const points = PolylineDecoder.decode(
-        json.routes[0].overview_polyline.points
-      );
-      const routeCoordinates = points.map(([lat, lng]) => ({
-        latitude: lat,
-        longitude: lng,
-      }));
-      return routeCoordinates;
-    } else {
-      console.error("No se encontraron rutas");
-      return [];
+    function init(){
+      const startCenter = origin ? toLatLng(origin) :
+        (points.length ? toLatLng(points[0]) : {lat: 4.60971, lng: -74.08175});
+
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: startCenter,
+        zoom: 13,
+        clickableIcons: false,
+        fullscreenControl: false,
+        streetViewControl: false,
+        mapTypeControl: false,
+      });
+
+      // Markers de puntos
+      const bounds = new google.maps.LatLngBounds();
+      points.forEach(p => {
+        const pos = toLatLng(p);
+        const m = new google.maps.Marker({
+          position: pos,
+          map,
+          title: p.receptor + " - " + p.address,
+        });
+        bounds.extend(pos);
+
+        m.addListener('click', () => {
+          RNW && RNW.postMessage(JSON.stringify({type: 'marker_click', payload: p}));
+        });
+      });
+
+      // Marker de origen (ubicación actual)
+      if(origin){
+        const om = new google.maps.Marker({
+          position: toLatLng(origin),
+          map,
+          title: 'Ubicación actual',
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 6
+          }
+        });
+        bounds.extend(toLatLng(origin));
+      }
+
+      // Directions
+      if(origin && destination){
+        const ds = new google.maps.DirectionsService();
+        const dr = new google.maps.DirectionsRenderer({ map, suppressMarkers: true, polylineOptions: { strokeWeight: 4 } });
+
+        const gWaypoints = (waypoints || []).map(w => ({ location: toLatLng(w), stopover: true }));
+
+        ds.route({
+          origin: toLatLng(origin),
+          destination: toLatLng(destination),
+          waypoints: gWaypoints,
+          optimizeWaypoints: true,     // Google puede reordenar para mejor ruta
+          travelMode: google.maps.TravelMode.DRIVING
+        }, (res, status) => {
+          if(status === 'OK'){
+            dr.setDirections(res);
+            // Ajustamos bounds a la ruta
+            const route = res.routes[0];
+            const legs = route.legs || [];
+            const b = new google.maps.LatLngBounds();
+            legs.forEach(l => {
+              b.extend(l.start_location);
+              b.extend(l.end_location);
+            });
+            if(!b.isEmpty()) map.fitBounds(b);
+          }else{
+            RNW && RNW.postMessage(JSON.stringify({type:'directions_error', status}));
+            // Si falla, al menos ajustamos a bounds de markers
+            if(!bounds.isEmpty()) map.fitBounds(bounds);
+          }
+        });
+      } else {
+        if(!bounds.isEmpty()) map.fitBounds(bounds);
+      }
     }
-  } catch (err) {
-    console.error("Error al obtener ruta", err);
-    return [];
-  }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>`;
 };
 
 const Map = () => {
   const [loading, setLoading] = useState(true);
-  const [latitude, setLatitude] = useState(0);
-  const [longitude, setLongitude] = useState(0);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [orderedPoints, setOrderedPoints] = useState([]);
-  const [routeCoordinates, setRouteCoordinates] = useState([]);
-  const [selectedPoint, setSelectedPoint] = useState(null);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [orderedPoints, setOrderedPoints] = useState<typeof data>([]);
+  const [selectedPoint, setSelectedPoint] = useState<
+    (typeof data)[number] | null
+  >(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleGetLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permiso para acceder a la ubicación fue denegado");
+        setLoading(false);
         return;
       }
 
@@ -126,21 +238,9 @@ const Map = () => {
       const sorted = sortByDistance(currentLat, currentLon, data);
       setOrderedPoints(sorted);
 
-      if (sorted.length > 0) {
-        const origin = { latitude: currentLat, longitude: currentLon };
-        const destination = {
-          latitude: sorted[sorted.length - 1].latitude,
-          longitude: sorted[sorted.length - 1].longitude,
-        };
-        const waypoints = sorted.slice(0, sorted.length - 1);
-
-        const route = await getGoogleRoute(origin, waypoints, destination);
-        setRouteCoordinates(route);
-      }
-
       setLoading(false);
-    } catch (error) {
-      setErrorMsg(error.message);
+    } catch (error: any) {
+      setErrorMsg(error?.message || "Error al obtener ubicación");
       setLoading(false);
     }
   };
@@ -149,9 +249,33 @@ const Map = () => {
     handleGetLocation();
   }, []);
 
-  const handleMarkerPress = (item: object) => {
-    setSelectedPoint(item);
-  };
+  // Prepara datos para el WebView
+  const origin = latitude && longitude ? { latitude, longitude } : null;
+  const destination = useMemo(() => {
+    if (!orderedPoints.length) return null;
+    return {
+      latitude: orderedPoints[orderedPoints.length - 1].latitude,
+      longitude: orderedPoints[orderedPoints.length - 1].longitude,
+    };
+  }, [orderedPoints]);
+
+  const waypoints = useMemo(() => {
+    if (!orderedPoints.length) return [];
+    return orderedPoints.slice(0, orderedPoints.length - 1).map((p) => ({
+      latitude: p.latitude,
+      longitude: p.longitude,
+    }));
+  }, [orderedPoints]);
+
+  const mapHtml = useMemo(() => {
+    return buildMapHtml({
+      apiKey: GOOGLE_API_KEY || "",
+      origin,
+      waypoints,
+      destination,
+      points: orderedPoints,
+    });
+  }, [GOOGLE_API_KEY, origin, waypoints, destination, orderedPoints]);
 
   const link = `delivery/DeliveryDetail?id=${selectedPoint?.id || ""}`;
 
@@ -202,62 +326,44 @@ const Map = () => {
           </Link>
         </MapsCard>
       )}
+
       <MapsCard title={""} style={{ flex: 1 }}>
-        {loading && (
+        {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>Cargando ruta...</Text>
+            <Text style={styles.loadingText}>Cargando mapa...</Text>
+            {!!errorMsg && (
+              <Text
+                style={[styles.loadingText, { fontSize: 14, opacity: 0.7 }]}
+              >
+                {errorMsg}
+              </Text>
+            )}
           </View>
-        )}
-        {!loading && (
+        ) : (
           <View style={styles.containerMap}>
-            <MapView
-              provider={PROVIDER_GOOGLE}
+            <WebView
+              originWhitelist={["*"]}
+              javaScriptEnabled
+              domStorageEnabled
+              geolocationEnabled
               style={styles.map}
-              initialRegion={{
-                latitude: latitude,
-                longitude: longitude,
-                latitudeDelta: 0.03,
-                longitudeDelta: 0.03,
+              source={{ html: mapHtml }}
+              onMessage={(e) => {
+                try {
+                  const msg = JSON.parse(e.nativeEvent.data);
+                  if (msg.type === "marker_click") {
+                    setSelectedPoint(msg.payload);
+                  } else if (
+                    msg.type === "error" ||
+                    msg.type === "directions_error"
+                  ) {
+                    // Puedes loguear/mostrar toast si quieres
+                    // console.log("MAP MSG:", msg);
+                  }
+                } catch {}
               }}
-            >
-              {orderedPoints.map((item) => (
-                <Marker
-                  key={item.id}
-                  coordinate={{
-                    latitude: item.latitude,
-                    longitude: item.longitude,
-                  }}
-                  title={item.receptor}
-                  description={item.address}
-                  onPress={() => handleMarkerPress(item)}
-                  image={require("../../assets/pin.png")}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    overflow: "hidden",
-                    borderWidth: 2,
-                    borderColor: "#007AFF",
-                  }}
-                />
-              ))}
-
-              <Marker
-                coordinate={{ latitude, longitude }}
-                title={"Ubicación Actual"}
-                pinColor={"#00FF00"}
-                description={"Ubicación actual"}
-              />
-
-              {routeCoordinates.length > 0 && (
-                <Polyline
-                  coordinates={routeCoordinates}
-                  strokeWidth={4}
-                  strokeColor="#007AFF"
-                />
-              )}
-            </MapView>
+            />
           </View>
         )}
       </MapsCard>
@@ -274,14 +380,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingBottom: 20,
   },
-  titleView: {
-    fontSize: theme.fonts.sizes.bigtitle,
-    fontWeight: "bold",
-    color: "#fff",
-    marginTop: 20,
-    textAlign: "center",
-  },
-
   containerMap: {
     flex: 1,
     width: "100%",
@@ -289,10 +387,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginRight: 0,
   },
-
   map: {
     flex: 1,
-    width: "100%", // Ajusta este valor si deseas más o menos espacio
+    width: "100%",
   },
   containerTextDetail: {
     flexDirection: "row",
@@ -302,7 +399,7 @@ const styles = StyleSheet.create({
   detailTextTitle: {
     fontSize: 15,
     color: "#fff",
-    fontWeight: "medium",
+    fontWeight: "500",
     marginRight: 5,
   },
   detailText: {
@@ -319,10 +416,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
   },
-
   loadingText: {
     marginTop: 10,
-    fontSize: theme.fonts.sizes.subtitle,
+    fontSize: 16,
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",

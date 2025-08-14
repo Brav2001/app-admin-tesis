@@ -17,12 +17,12 @@
     "expo": "^53.0.7",
     "expo-camera": "~16.1.6",
     "expo-checkbox": "~4.1.4",
-    "expo-constants": "~17.1.6",
+    "expo-constants": "~17.1.7",
     "expo-font": "~13.3.1",
     "expo-image": "~2.1.6",
     "expo-linear-gradient": "~14.1.4",
     "expo-linking": "~7.1.4",
-    "expo-location": "~18.1.5",
+    "expo-location": "~18.1.6",
     "expo-router": "~5.0.5",
     "expo-secure-store": "~14.2.3",
     "expo-splash-screen": "~0.30.8",
@@ -41,7 +41,8 @@
     "toggle-switch-react-native": "^3.3.0",
     "typescript": "~5.8.3",
     "yup": "^1.4.0",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "react-native-webview": "13.13.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

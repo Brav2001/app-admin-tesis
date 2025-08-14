@@ -20,6 +20,15 @@ export default {
       config: {
         googleMapsApiKey: "AIzaSyA4dh2L9NbnjEyPEMqhnZpM23OmCEwucSY",
       },
+      infoplist: {
+        NSCameraUsageDescription: "This app uses the camera to scan QR codes.",
+        NSLocationWhenInUseUsageDescription:
+          "This app uses your location to show nearby places.",
+        NSLocationAlwaysAndWhenInUseUsageDescription:
+          "This app uses your location to show nearby places.",
+        NSMicrophoneUsageDescription:
+          "This app uses the microphone to record audio.",
+      },
     },
     android: {
       config: {
@@ -65,7 +74,7 @@ export default {
       ],
     ],
     extra: {
-      MAP_API_KEY: process.env.EXPO_MAP_API_KEY,
+      MAP_API_KEY: "AIzaSyA4dh2L9NbnjEyPEMqhnZpM23OmCEwucSY",
     },
   },
 };
