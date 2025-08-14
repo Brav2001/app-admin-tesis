@@ -9,9 +9,11 @@ import { retrieveId, retrieveToken } from "@/utils/storageAuth";
 import api from "@/utils/api";
 import axios from "axios";
 import { formatTimeDifference } from "@/utils/functions";
+import { useStore } from "@/utils/store";
 
 const DeliveryList = () => {
   const [orders, setOrders] = useState([]);
+  const [setAddresses] = useStore((state) => [state.setAddresses]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchOrders = async () => {
@@ -33,6 +35,21 @@ const DeliveryList = () => {
         }));
 
         setOrders(parsed);
+
+        const addressData = data.map((order) => {
+          const address = order.Order.Address || {};
+          return {
+            id: order.OrderId,
+            address: address.direction || "N/A",
+            receptor: address.contactName || "N/A",
+            numberPhone: address.contactPhone || "N/A",
+            isValidate: address.verified || false,
+            latitude: parseFloat(address.latitude || 0),
+            longitude: parseFloat(address.longitude || 0),
+          };
+        });
+
+        setAddresses(addressData);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
