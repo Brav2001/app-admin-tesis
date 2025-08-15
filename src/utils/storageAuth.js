@@ -10,6 +10,22 @@ export const storeData = async (data) => {
   }
 };
 
+export const saveActiveDelivery = async (value) => {
+  try {
+    await SecureStore.setItemAsync("activeDelivery", value);
+  } catch (error) {
+    console.log("Error al almacenar el activeDelivery:", error);
+  }
+};
+
+export const saveGeofencingStart = async (value) => {
+  try {
+    await SecureStore.setItemAsync("geofencingStart", value);
+  } catch (error) {
+    console.log("Error al almacenar el geofencingStart:", error);
+  }
+};
+
 export const retrieveAuth = async () => {
   try {
     const token = await SecureStore.getItemAsync("authId");
@@ -64,11 +80,39 @@ export const retrieveToken = async () => {
   }
 };
 
+export const retrieveActiveDelivery = async () => {
+  try {
+    const activeDelivery = await SecureStore.getItemAsync("activeDelivery");
+    if (activeDelivery) {
+      return activeDelivery;
+    } else {
+      console.log("No se encontró ningún activeDelivery almacenado");
+    }
+  } catch (error) {
+    console.log("Error al recuperar el activeDelivery:", error);
+  }
+};
+
+export const retrieveGeofencingStart = async () => {
+  try {
+    const geofencingStart = await SecureStore.getItemAsync("geofencingStart");
+    if (geofencingStart) {
+      return geofencingStart;
+    } else {
+      console.log("No se encontró ningún geofencingStart almacenado");
+    }
+  } catch (error) {
+    console.log("Error al recuperar el geofencingStart:", error);
+  }
+};
+
 export const removeData = async () => {
   try {
     await SecureStore.deleteItemAsync("authToken");
     await SecureStore.deleteItemAsync("authId");
     await SecureStore.deleteItemAsync("authRol");
+    await SecureStore.deleteItemAsync("activeDelivery");
+    await SecureStore.deleteItemAsync("geofencingStart");
   } catch (error) {
     console.log("Error al eliminar la data:", error);
   }

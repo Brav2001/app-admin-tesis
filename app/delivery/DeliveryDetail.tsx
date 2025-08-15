@@ -13,13 +13,12 @@ const DeliveryDetail = () => {
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const id =
     paramId || "7"; /* redireccionar a la pantalla orderList si no exite el id*/
-  const time = 30;
   return (
     <SafeAreaView style={styles.container}>
       <MainCard title={""}>
         <HeaderContainerCard id={id} />
         <Text style={styles.titleView}>Detalles del pedido</Text>
-        <ProductList />
+        <ProductList id={id} />
         <View style={styles.checkContainer}>
           <Text style={styles.textCheck}>
             Confirma que el pedido esta listo antes de entregar

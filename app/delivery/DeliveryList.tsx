@@ -5,11 +5,19 @@ import UserInfo from "@/components/ordersInfo/UserInfo";
 import OrderList from "@/components/ordersInfo/OrdersList";
 import MapButton from "@/components/general/MapButton";
 import IsAvailableSwitch from "@/components/general/IsAvalaibleSwitch";
-import { retrieveId, retrieveToken } from "@/utils/storageAuth";
+import {
+  retrieveId,
+  retrieveToken,
+  saveActiveDelivery,
+  retrieveActiveDelivery,
+  retrieveGeofencingStart,
+  saveGeofencingStart,
+} from "@/utils/storageAuth";
 import api from "@/utils/api";
 import axios from "axios";
 import { formatTimeDifference } from "@/utils/functions";
 import { useStore } from "@/utils/store";
+import { startGeofencing } from "@/utils/geofencing";
 
 const DeliveryList = () => {
   const [orders, setOrders] = useState([]);
@@ -62,6 +70,41 @@ const DeliveryList = () => {
     const intervalId = setInterval(fetchOrders, 30000);
 
     return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const checkActiveDelivery = async () => {
+      const activeDelivery = await retrieveActiveDelivery();
+      if (activeDelivery == "true" || activeDelivery == "false") {
+        return;
+      } else {
+        await saveActiveDelivery("false");
+      }
+    };
+
+    checkActiveDelivery();
+
+    console.log("Active delivery status checked");
+  }, []);
+
+  useEffect(() => {
+    const startGeofencingIfNeeded = async () => {
+      const geofencingStart = await retrieveGeofencingStart();
+      console.log("Geofencing start status:", geofencingStart);
+
+      if (
+        geofencingStart === "false" ||
+        geofencingStart === null ||
+        geofencingStart === undefined
+      ) {
+        console.log("Starting geofencing...");
+
+        await saveGeofencingStart("true");
+        await startGeofencing();
+      }
+    };
+
+    startGeofencingIfNeeded();
   }, []);
 
   return (

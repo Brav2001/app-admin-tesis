@@ -15,6 +15,7 @@ const api = {
     return `${DOMAIN}/order_staff/releaseCollector/${id}`;
   },
   getOrdersByCourier: (id) => `${DOMAIN}/order_staff/getOrdersByCourier/${id}`,
+  updateStatusStaff: (id) => `${DOMAIN}/order_staff/updateStatus/${id}`,
 };
 
 export default api;

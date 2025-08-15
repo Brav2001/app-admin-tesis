@@ -6,6 +6,7 @@ import theme from "../../utils/theme";
 import { FontAwesome } from "@expo/vector-icons";
 import { removeData } from "../../utils/storageAuth";
 import { useStore } from "../../utils/store";
+import { stopGeofencing } from "@/utils/geofencing";
 
 const Header = () => {
   const [ChangeLogged, dataStaff] = useStore((state) => [
@@ -19,6 +20,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    stopGeofencing();
     setModalVisible(false);
     removeData();
     ChangeLogged(false);

@@ -42,7 +42,8 @@
     "typescript": "~5.8.3",
     "yup": "^1.4.0",
     "zustand": "^4.5.2",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "expo-task-manager": "~13.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   buttonText: {
-    marginLeft: 8,
+    marginLeft: 30,
     fontSize: 16,
     fontWeight: "bold",
     color: "#000",

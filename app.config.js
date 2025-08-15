@@ -24,10 +24,13 @@ export default {
         NSCameraUsageDescription: "This app uses the camera to scan QR codes.",
         NSLocationWhenInUseUsageDescription:
           "This app uses your location to show nearby places.",
+        NSLocationAlwaysUsageDescription:
+          "Necesitamos acceso a tu ubicación incluso cuando la app está en segundo plano para poder detectar tu ubicación.",
         NSLocationAlwaysAndWhenInUseUsageDescription:
           "This app uses your location to show nearby places.",
         NSMicrophoneUsageDescription:
           "This app uses the microphone to record audio.",
+        UIBackgroundModes: ["location", "fetch"],
       },
     },
     android: {
@@ -40,7 +43,13 @@ export default {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
-      permissions: ["android.permission.INTERNET"],
+      permissions: [
+        "android.permission.INTERNET",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA",
+      ],
     },
     web: {
       favicon: "./assets/favicon.png",

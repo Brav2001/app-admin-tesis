@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { Link } from "expo-router";
 
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
+import BackButton from "@/components/general/BackButton";
 import MapsCard from "@/components/general/MapsCard";
 import { useStore } from "@/utils/store";
 
@@ -41,6 +42,10 @@ const Map = () => {
   const [selectedPoint, setSelectedPoint] =
     useState<AddressWithDistance | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const locationSubscription = useRef<Location.LocationSubscription | null>(
+    null
+  );
 
   const sortByDistance = (
     lat: number,
@@ -231,18 +236,29 @@ const Map = () => {
         return;
       }
 
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
+      if (locationSubscription.current) {
+        locationSubscription.current.remove();
+      }
 
-      const currentLat = location.coords.latitude;
-      const currentLon = location.coords.longitude;
+      locationSubscription.current = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 5000, // cada 5 segundos
+          distanceInterval: 5, // o cada 5 metros de cambio
+        },
+        (location) => {
+          const { latitude: currentLat, longitude: currentLon } =
+            location.coords;
 
-      setLatitude(currentLat);
-      setLongitude(currentLon);
+          setLatitude(currentLat);
+          setLongitude(currentLon);
 
-      const sorted = sortByDistance(currentLat, currentLon, addresses);
-      setOrderedPoints(sorted);
+          if (addresses?.length > 0) {
+            const sorted = sortByDistance(currentLat, currentLon, addresses);
+            setOrderedPoints(sorted);
+          }
+        }
+      );
 
       setLoading(false);
     } catch (error: any) {
@@ -259,6 +275,12 @@ const Map = () => {
     }
 
     handleGetLocation();
+
+    return () => {
+      if (locationSubscription.current) {
+        locationSubscription.current.remove();
+      }
+    };
   }, [addresses]);
 
   // Prepara datos para el WebView
@@ -291,18 +313,44 @@ const Map = () => {
 
   const link = `delivery/DeliveryDetail?id=${selectedPoint?.id || ""}`;
 
+  useEffect(() => {
+    console.log(selectedPoint);
+  }, [selectedPoint]);
+
   return (
     <SafeAreaView style={styles.container}>
       <MapsCard title={""}>
-        <HeaderContainerCard id={selectedPoint?.id || ""} />
+        {selectedPoint ? (
+          <HeaderContainerCard id={selectedPoint.id} />
+        ) : (
+          <View style={styles.emptyHeader}>
+            <BackButton />
+            <Text style={styles.emptyHeaderText}>
+              Selecciona un pedido en el mapa para ver detalles
+            </Text>
+          </View>
+        )}
       </MapsCard>
 
       {selectedPoint && (
         <MapsCard title={""}>
           <Link href={link} asChild>
-            <TouchableOpacity>
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                <View style={{ flex: 1 }}>
+            <TouchableOpacity style={styles.touchableCard}>
+              <View style={styles.cardRow}>
+                <View style={styles.cardContent}>
+                  {!selectedPoint.isValidate && (
+                    <View style={styles.warningContainer}>
+                      <FontAwesome
+                        name="warning"
+                        size={20}
+                        color="#FFB300"
+                        style={styles.warningIcon}
+                      />
+                      <Text style={styles.warningText}>
+                        Esta dirección no ha sido verificada
+                      </Text>
+                    </View>
+                  )}
                   <View style={styles.containerTextDetail}>
                     <Text style={styles.detailTextTitle}>Dirección:</Text>
                     <Text style={styles.detailText}>
@@ -322,10 +370,8 @@ const Map = () => {
                     </Text>
                   </View>
                 </View>
-                <View style={{ justifyContent: "center" }}>
-                  <Text style={styles.orderButtonText}>
-                    <FontAwesome name="arrow-right" size={30} color="#FFFFFF" />
-                  </Text>
+                <View style={styles.arrowContainer}>
+                  <FontAwesome name="arrow-right" size={30} color="#FFFFFF" />
                 </View>
               </View>
             </TouchableOpacity>
@@ -398,22 +444,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
-  containerTextDetail: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 2,
-  },
-  detailTextTitle: {
-    fontSize: 15,
-    color: "#fff",
-    fontWeight: "500",
-    marginRight: 5,
-  },
-  detailText: {
-    fontSize: 17,
-    color: "#fff",
-    fontWeight: "bold",
-  },
+
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
@@ -430,9 +461,92 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+
   orderButtonText: {
-    color: theme.colors.textPrimary,
-    fontSize: 16,
+    color: "#FFFFFF",
+  },
+
+  touchableCard: {
+    backgroundColor: "#1E1E1E", // Oscuro elegante
+    borderRadius: 12,
+    padding: 14,
+    marginVertical: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
+
+  cardRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  cardContent: {
+    flex: 1,
+    gap: 6, // espacio vertical entre bloques
+  },
+
+  arrowContainer: {
+    justifyContent: "center",
+    paddingHorizontal: 5,
+  },
+
+  warningContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF3CD",
+    borderLeftWidth: 4,
+    borderLeftColor: "#FFB300",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    marginBottom: 10,
+  },
+
+  warningIcon: {
+    marginRight: 8,
+  },
+
+  warningText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#856404",
+    flexShrink: 1,
+  },
+
+  containerTextDetail: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap", // evita que se corte el texto
+  },
+
+  detailTextTitle: {
+    fontSize: 15,
+    color: "#fff",
+    fontWeight: "500",
+    marginRight: 5,
+  },
+
+  detailText: {
+    fontSize: 15,
+    color: "#fff",
+    fontWeight: "bold",
+    flexShrink: 1, // evita desbordamiento
+  },
+
+  emptyHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  emptyHeaderText: {
+    marginLeft: 8,
+    color: "#bbb",
+    fontSize: 14,
+    fontStyle: "italic",
   },
 });
 

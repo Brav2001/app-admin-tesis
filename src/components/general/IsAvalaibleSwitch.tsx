@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import ToggleSwitch from "toggle-switch-react-native";
 import theme from "@/utils/theme.js";
+import {
+  saveActiveDelivery,
+  retrieveActiveDelivery,
+} from "@/utils/storageAuth";
 
 const IsAvailableSwitch = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
+    saveActiveDelivery(isEnabled ? "false" : "true");
     setIsEnabled((previousState) => !previousState);
   };
+
+  const checkActiveDelivery = async () => {
+    const activeDelivery = await retrieveActiveDelivery();
+    if (activeDelivery == "true" || activeDelivery == "false") {
+      setIsEnabled(activeDelivery == "true");
+    } else {
+      await saveActiveDelivery(false);
+    }
+  };
+
+  useEffect(() => {
+    checkActiveDelivery();
+  }, []);
   return (
     <View style={styles.container}>
       <ToggleSwitch
