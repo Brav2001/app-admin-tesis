@@ -90,6 +90,9 @@ export default {
     ],
     extra: {
       MAP_API_KEY: "AIzaSyA4dh2L9NbnjEyPEMqhnZpM23OmCEwucSY",
+      eas: {
+        projectId: "d702fd05-1c6e-4bd6-b096-a394437d3d77",
+      },
     },
   },
 };
