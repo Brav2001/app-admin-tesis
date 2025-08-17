@@ -97,9 +97,6 @@ const DeliveryList = () => {
         geofencingStart === null ||
         geofencingStart === undefined
       ) {
-        console.log("Starting geofencing...");
-
-        await saveGeofencingStart("true");
         await startGeofencing();
       }
     };

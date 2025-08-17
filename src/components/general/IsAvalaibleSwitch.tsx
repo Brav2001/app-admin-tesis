@@ -19,7 +19,7 @@ const IsAvailableSwitch = () => {
     if (activeDelivery == "true" || activeDelivery == "false") {
       setIsEnabled(activeDelivery == "true");
     } else {
-      await saveActiveDelivery(false);
+      await saveActiveDelivery("false");
     }
   };
 

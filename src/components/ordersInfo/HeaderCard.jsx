@@ -19,8 +19,10 @@ const Header = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const handleLogout = () => {
-    stopGeofencing();
+  const handleLogout = async () => {
+    console.log("Logout initiated");
+
+    await stopGeofencing();
     setModalVisible(false);
     removeData();
     ChangeLogged(false);

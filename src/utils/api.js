@@ -16,6 +16,7 @@ const api = {
   },
   getOrdersByCourier: (id) => `${DOMAIN}/order_staff/getOrdersByCourier/${id}`,
   updateStatusStaff: (id) => `${DOMAIN}/order_staff/updateStatus/${id}`,
+  getAdministrationData: `${DOMAIN}/administration/getDataCreated`,
 };
 
 export default api;

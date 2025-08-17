@@ -12,13 +12,6 @@ import api from "./api";
 
 const GEOFENCE_TASK = "GEOFENCE_TASK";
 
-// Coordenadas del perímetro
-const TARGET_REGION = {
-  latitude: 8.234712, // Ejemplo
-  longitude: -73.361214, // Ejemplo
-  radius: 100, // metros
-};
-
 // Definimos la tarea que se ejecuta en segundo plano
 TaskManager.defineTask(
   GEOFENCE_TASK,
@@ -82,6 +75,22 @@ export async function startGeofencing() {
     console.error("Permiso de ubicación en segundo plano denegado");
     return;
   }
+
+  const data = await axios.get(api.getAdministrationData, {
+    headers: {
+      "auth-token": await retrieveToken(),
+    },
+  });
+
+  console.info("Datos de geofencing:", data.data);
+
+  const TARGET_REGION = {
+    latitude: data.data[0].latitude,
+    longitude: data.data[0].longitude,
+    radius: data.data[0].radius,
+  };
+
+  console.log("Región objetivo:", TARGET_REGION);
 
   await Location.startGeofencingAsync(GEOFENCE_TASK, [TARGET_REGION]);
   await saveGeofencingStart("true"); // Guardar estado de inicio de geofencing
