@@ -11,6 +11,10 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_MAP_API_KEY": "AIzaSyA4dh2L9NbnjEyPEMqhnZpM23OmCEwucSY",
+        "EXPO_PUBLIC_DOMAIN": "https://api-node-tesis-production.up.railway.app"
       }
     },
     "production": {}

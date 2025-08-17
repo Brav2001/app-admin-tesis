@@ -111,7 +111,7 @@ export async function startGeofencing() {
     radius: data.data[0].radius,
   };
 
-  await saveNameZone(data.data[0].nameZone);
+  await saveNameZone(data.data[0].name);
 
   console.log("Región objetivo:", TARGET_REGION);
 

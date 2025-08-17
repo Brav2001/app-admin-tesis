@@ -4,16 +4,17 @@ export default {
   expo: {
     scheme: "laCosecha",
     newArchEnabled: true,
-    name: "app-admin-tesis",
+    name: "Entrego",
     slug: "app-admin-tesis",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
+    owner: "brayanacosta",
     splash: {
       image: "./assets/splash.png",
       resizeMode: "contain",
-      backgroundColor: "#00000",
+      backgroundColor: "#000000",
     },
     ios: {
       supportsTablet: true,
@@ -45,22 +46,15 @@ export default {
       },
       permissions: [
         "android.permission.INTERNET",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION",
-        "CAMERA",
+        "android.permission.CAMERA",
       ],
+      package: "com.entrego.app",
     },
     web: {
       favicon: "./assets/favicon.png",
     },
     plugins: [
-      [
-        "expo-font",
-        {
-          fonts: ["src/assets/fonts/Courier-Prime.ttf"],
-        },
-      ],
       [
         "expo-camera",
         {
