@@ -81,6 +81,12 @@ export default {
           isAndroidBackgroundLocationEnabled: true,
         },
       ],
+      [
+        "expo-notifications",
+        {
+          icon: "./assets/adaptive-icon.png",
+        },
+      ],
     ],
     extra: {
       MAP_API_KEY: "AIzaSyA4dh2L9NbnjEyPEMqhnZpM23OmCEwucSY",

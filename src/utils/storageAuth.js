@@ -26,6 +26,14 @@ export const saveGeofencingStart = async (value) => {
   }
 };
 
+export const saveNameZone = async (value) => {
+  try {
+    await SecureStore.setItemAsync("nameZone", value);
+  } catch (error) {
+    console.log("Error al almacenar el nameZone:", error);
+  }
+};
+
 export const retrieveAuth = async () => {
   try {
     const token = await SecureStore.getItemAsync("authId");
@@ -106,6 +114,19 @@ export const retrieveGeofencingStart = async () => {
   }
 };
 
+export const retrieveNameZone = async () => {
+  try {
+    const nameZone = await SecureStore.getItemAsync("nameZone");
+    if (nameZone) {
+      return nameZone;
+    } else {
+      console.log("No se encontró ningún nameZone almacenado");
+    }
+  } catch (error) {
+    console.log("Error al recuperar el nameZone:", error);
+  }
+};
+
 export const removeData = async () => {
   try {
     await SecureStore.deleteItemAsync("authToken");
@@ -113,6 +134,7 @@ export const removeData = async () => {
     await SecureStore.deleteItemAsync("authRol");
     await SecureStore.deleteItemAsync("activeDelivery");
     await SecureStore.deleteItemAsync("geofencingStart");
+    await SecureStore.deleteItemAsync("nameZone");
   } catch (error) {
     console.log("Error al eliminar la data:", error);
   }

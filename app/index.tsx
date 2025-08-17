@@ -9,9 +9,10 @@ import theme from "@/utils/theme";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useStore } from "@/utils/store";
 import { retrieveAuth } from "@/utils/storageAuth";
+import * as Notifications from "expo-notifications";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,6 +38,17 @@ const Main = () => {
   if (!fontsLoaded && !fontError) {
     return null;
   }
+
+  const getNotificationPermissions = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Permisos de notificación no concedidos");
+    }
+  };
+
+  useEffect(() => {
+    getNotificationPermissions();
+  }, []);
 
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
