@@ -1,7 +1,17 @@
 import { Slot } from "expo-router";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message"; // <-- Importa Toast
+import "../src/utils/geofencing"; // <-- Importa geofencing
+import * as Notifications from "expo-notifications";
 
 export default function Layout() {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
   const toastConfig = {
     success: (props) => (
       <BaseToast

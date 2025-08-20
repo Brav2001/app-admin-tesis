@@ -12,10 +12,19 @@ import { useCallback } from "react";
 import { useStore } from "@/utils/store";
 import { retrieveAuth } from "@/utils/storageAuth";
 import * as Notifications from "expo-notifications";
+import "src/utils/geofencing";
 
 SplashScreen.preventAutoHideAsync();
 
 const Main = () => {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
   const [logged, ChangeLogged, dataStaff] = useStore((state) => [
     state.logged,
     state.ChangeLogged,
