@@ -34,6 +34,22 @@ export const saveNameZone = async (value) => {
   }
 };
 
+export const saveLocationStorage = async (value) => {
+  try {
+    await SecureStore.setItemAsync("locationString", JSON.stringify(value));
+  } catch (error) {
+    console.log("Error al almacenar la ubicación:", error);
+  }
+};
+
+export const saveStatusStaff = async (status) => {
+  try {
+    await SecureStore.setItemAsync("statusStaff", status);
+  } catch (error) {
+    console.log("Error al almacenar el statusStaff:", error);
+  }
+};
+
 export const retrieveAuth = async () => {
   try {
     const token = await SecureStore.getItemAsync("authId");
@@ -127,6 +143,32 @@ export const retrieveNameZone = async () => {
   }
 };
 
+export const retrieveLocationStorage = async () => {
+  try {
+    const locationString = await SecureStore.getItemAsync("locationString");
+    if (locationString) {
+      return JSON.parse(locationString);
+    } else {
+      console.log("No se encontró ninguna ubicación almacenada");
+    }
+  } catch (error) {
+    console.log("Error al recuperar la ubicación:", error);
+  }
+};
+
+export const retrieveStatusStaff = async () => {
+  try {
+    const statusStaff = await SecureStore.getItemAsync("statusStaff");
+    if (statusStaff) {
+      return statusStaff;
+    } else {
+      console.log("No se encontró ningún statusStaff almacenado");
+    }
+  } catch (error) {
+    console.log("Error al recuperar el statusStaff:", error);
+  }
+};
+
 export const removeData = async () => {
   try {
     await SecureStore.deleteItemAsync("authToken");
@@ -135,6 +177,8 @@ export const removeData = async () => {
     await SecureStore.deleteItemAsync("activeDelivery");
     await SecureStore.deleteItemAsync("geofencingStart");
     await SecureStore.deleteItemAsync("nameZone");
+    await SecureStore.deleteItemAsync("locationString");
+    await SecureStore.deleteItemAsync("statusStaff");
   } catch (error) {
     console.log("Error al eliminar la data:", error);
   }

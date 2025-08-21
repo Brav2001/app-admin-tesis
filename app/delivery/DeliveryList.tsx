@@ -67,7 +67,7 @@ const DeliveryList = () => {
 
     fetchOrders();
 
-    const intervalId = setInterval(fetchOrders, 30000);
+    const intervalId = setInterval(fetchOrders, 10000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -90,7 +90,6 @@ const DeliveryList = () => {
   useEffect(() => {
     const startGeofencingIfNeeded = async () => {
       const geofencingStart = await retrieveGeofencingStart();
-      console.log("Geofencing start status:", geofencingStart);
 
       if (
         geofencingStart === "false" ||
@@ -110,7 +109,7 @@ const DeliveryList = () => {
       <UserInfo ordersLength={orders.length} />
       <IsAvailableSwitch />
       <OrderList orders={orders} />
-      <MapButton />
+      {orders.length > 0 && <MapButton />}
     </View>
   );
 };

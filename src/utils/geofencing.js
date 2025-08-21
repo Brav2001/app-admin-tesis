@@ -9,25 +9,42 @@ import {
   retrieveGeofencingStart,
   saveNameZone,
   retrieveNameZone,
+  saveLocationStorage,
+  retrieveLocationStorage,
+  saveStatusStaff,
+  retrieveStatusStaff,
 } from "./storageAuth";
 import axios from "axios";
 import api from "./api";
+import { getDistance } from "geolib";
 
-const GEOFENCE_TASK = "GEOFENCE_TASK";
+const LOCATION_TASK = "LOCATION_TASK";
 
-TaskManager.defineTask(
-  GEOFENCE_TASK,
-  async ({ data: { eventType }, error }) => {
-    if (error) {
-      console.error("Error en geofencing:", error);
-      return;
-    }
+TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
+  if (error) {
+    console.error("Error en geofencing:", error);
+    return;
+  }
+  console.log("Data: ", data);
 
+  if (data) {
     const isActive = await retrieveActiveDelivery();
     const nameZone = await retrieveNameZone();
 
-    if (eventType === Location.GeofencingEventType.Enter) {
-      if (isActive === "true") {
+    const bodegaData = await retrieveLocationStorage();
+
+    const { latitude, longitude } = data.locations[0].coords;
+
+    const distance = getDistance(
+      { latitude, longitude },
+      { latitude: bodegaData.latitude, longitude: bodegaData.longitude }
+    );
+
+    if (distance <= bodegaData.radius) {
+      if (
+        isActive === "true" &&
+        (await retrieveStatusStaff()) !== "Disponible"
+      ) {
         const payload = {
           status: "Disponible",
         };
@@ -37,12 +54,6 @@ TaskManager.defineTask(
         const params = {
           id: await retrieveId(),
         };
-
-        console.log("Enviando a la API (ENTER):", {
-          url: api.updateStatusStaff(params.id),
-          payload,
-          headers,
-        });
 
         try {
           const response = await axios.put(
@@ -64,48 +75,54 @@ TaskManager.defineTask(
           trigger: null,
         });
 
-        console.log("Entraste en el área y estás trabajando, API notificada.");
+        await saveStatusStaff("Disponible");
       }
-    } else if (eventType === Location.GeofencingEventType.Exit) {
-      const payload = {
-        status: "Inactivo",
-      };
-      const headers = {
-        "auth-token": await retrieveToken(),
-      };
-      const params = {
-        id: await retrieveId(),
-      };
+    } else {
+      if (
+        (await retrieveStatusStaff()) === "Disponible" ||
+        (await retrieveStatusStaff()) === undefined ||
+        (await retrieveStatusStaff()) === null
+      ) {
+        const payload = {
+          status: "Inactivo",
+        };
+        const headers = {
+          "auth-token": await retrieveToken(),
+        };
+        const params = {
+          id: await retrieveId(),
+        };
 
-      console.log("Enviando a la API (EXIT):", {
-        url: api.updateStatusStaff(params.id),
-        payload,
-        headers,
-      });
-
-      try {
-        const response = await axios.put(
-          api.updateStatusStaff(params.id),
+        console.log("Enviando a la API (EXIT):", {
+          url: api.updateStatusStaff(params.id),
           payload,
-          { headers }
-        );
-        console.log("Respuesta de la API (EXIT):", response.data);
-      } catch (apiError) {
-        console.error("Error al notificar API (EXIT):", apiError);
-      }
+          headers,
+        });
 
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: `Saliste de la bodega ${nameZone}`,
-          body: "Ahora estás inactivo y no recibirás pedidos hasta volver a entrar",
-          sound: "default",
-        },
-        trigger: null,
-      });
-      console.log("Saliste del área, API notificada.");
+        try {
+          const response = await axios.put(
+            api.updateStatusStaff(params.id),
+            payload,
+            { headers }
+          );
+          console.log("Respuesta de la API (EXIT):", response.data);
+        } catch (apiError) {
+          console.error("Error al notificar API (EXIT):", apiError);
+        }
+
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: `Saliste de la bodega ${nameZone}`,
+            body: "Ahora estás inactivo y no recibirás pedidos hasta volver a entrar.",
+            sound: "default",
+          },
+          trigger: null,
+        });
+        await saveStatusStaff("Inactivo");
+      }
     }
   }
-);
+});
 
 // Función para iniciar el geofencing
 export async function startGeofencing() {
@@ -136,22 +153,29 @@ export async function startGeofencing() {
   };
 
   await saveNameZone(data.data[0].name);
+  await saveLocationStorage(TARGET_REGION);
 
   console.log("Región objetivo:", TARGET_REGION);
 
-  await Location.startGeofencingAsync(GEOFENCE_TASK, [TARGET_REGION]);
+  await Location.startLocationUpdatesAsync(LOCATION_TASK, {
+    accuracy: Location.Accuracy.High,
+    timeInterval: 1000, // cada 1 segundo
+    distanceInterval: 10, // o cada 10 metros
+    showsBackgroundLocationIndicator: true,
+    foregroundService: {
+      notificationTitle: "Rastreo activo",
+      notificationBody: "Tu ubicación está siendo usada",
+    },
+  });
   await saveGeofencingStart("true");
   console.log("Geofencing iniciado");
 }
 
 // Función para detener geofencing
 export async function stopGeofencing() {
-  const started = await Location.hasStartedGeofencingAsync(GEOFENCE_TASK);
+  const started = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK);
   if (started) {
-    await Location.stopGeofencingAsync(GEOFENCE_TASK);
-    await saveGeofencingStart("false");
-    console.log("Geofencing detenido");
-  } else {
-    console.log("Geofencing ya estaba detenido");
+    await Location.stopLocationUpdatesAsync(LOCATION_TASK);
+    console.log("Rastreo detenido");
   }
 }

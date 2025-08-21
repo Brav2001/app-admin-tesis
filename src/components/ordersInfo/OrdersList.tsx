@@ -7,12 +7,18 @@ import MainCard from "../MainCard";
 const OrderList = ({ orders }) => {
   return (
     <MainCard title={"PENDIENTES"}>
-      <FlatList
-        data={orders}
-        renderItem={({ item }) => <OrderItem order={item} />}
-        keyExtractor={(item) => item.id}
-        style={styles.orderList}
-      />
+      {orders.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No hay órdenes pendientes</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={orders}
+          renderItem={({ item }) => <OrderItem order={item} />}
+          keyExtractor={(item) => item.id}
+          style={styles.orderList}
+        />
+      )}
     </MainCard>
   );
 };
@@ -30,6 +36,17 @@ const styles = StyleSheet.create({
   },
   orderList: {
     width: "100%",
+  },
+  emptyContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyText: {
+    color: "#fff",
+    fontSize: 16,
+    fontStyle: "italic",
+    textAlign: "center",
   },
 });
 
