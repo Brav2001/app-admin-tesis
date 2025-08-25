@@ -21,7 +21,6 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-    console.log("Cerrando sesión...");
     await inactiveStaff();
     await stopGeofencing();
     setModalVisible(false);

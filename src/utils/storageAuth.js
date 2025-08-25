@@ -189,9 +189,6 @@ export const removeData = async () => {
       const value = await SecureStore.getItemAsync(key);
       if (value !== null) {
         await SecureStore.deleteItemAsync(key);
-        console.log(`Eliminado: ${key}`);
-      } else {
-        console.log(`No existe: ${key}`);
       }
     }
   } catch (error) {
