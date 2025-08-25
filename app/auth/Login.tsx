@@ -3,8 +3,15 @@ import { View, StyleSheet } from "react-native";
 import LogoLogin from "@/components/login/LogoLogin";
 import MainCard from "@/components/MainCard";
 import LoginForm from "@/components/login/LoginForm";
+// import { stopGeofencing } from "@/utils/geofencing";
+// import { useEffect } from "react";
 
 const Login = () => {
+  // useEffect(() => {
+  //   (async () => {
+  //     await stopGeofencing();
+  //   })();
+  // }, []);
   return (
     <View style={styles.container}>
       <LogoLogin />

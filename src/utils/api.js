@@ -17,6 +17,9 @@ const api = {
   getOrdersByCourier: (id) => `${DOMAIN}/order_staff/getOrdersByCourier/${id}`,
   updateStatusStaff: (id) => `${DOMAIN}/order_staff/updateStatus/${id}`,
   getAdministrationData: `${DOMAIN}/administration/getDataCreated`,
+  releaseDelivery: (id) => `${DOMAIN}/order_staff/releaseDelivery/${id}`,
+  getAddressByOrderId: (id) => `${DOMAIN}/address/getAddressByOrder/${id}`,
+  updateAddress: () => `${DOMAIN}/address/`,
 };
 
 export default api;

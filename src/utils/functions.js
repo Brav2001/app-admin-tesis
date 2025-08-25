@@ -1,3 +1,7 @@
+import { saveStatusStaff, retrieveId, retrieveToken } from "./storageAuth";
+import api from "./api";
+import axios from "axios";
+
 export const formatTimeDifference = (createdAt) => {
   const now = new Date();
   const createdDate = new Date(createdAt);
@@ -16,4 +20,23 @@ export const formatTimeDifference = (createdAt) => {
   } else {
     return `${diffMinutes} minuto(s)`;
   }
+};
+
+export const inactiveStaff = async () => {
+  await axios
+    .put(
+      api.updateStatusStaff(await retrieveId()),
+      { status: "Inactivo" },
+      {
+        headers: {
+          "auth-token": await retrieveToken(),
+        },
+      }
+    )
+    .then(async () => {
+      await saveStatusStaff("Inactivo");
+    })
+    .catch((error) => {
+      console.error("Error al actualizar el estado del personal:", error);
+    });
 };

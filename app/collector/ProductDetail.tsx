@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";

@@ -17,7 +17,6 @@ import api from "@/utils/api";
 import axios from "axios";
 import { formatTimeDifference } from "@/utils/functions";
 import { useStore } from "@/utils/store";
-import { startGeofencing } from "@/utils/geofencing";
 
 const DeliveryList = () => {
   const [orders, setOrders] = useState([]);
@@ -34,6 +33,10 @@ const DeliveryList = () => {
           },
         });
 
+        if (response.status === 204) {
+          return;
+        }
+
         const data = response.data;
 
         const parsed = data.map((order) => ({
@@ -46,6 +49,7 @@ const DeliveryList = () => {
 
         const addressData = data.map((order) => {
           const address = order.Order.Address || {};
+
           return {
             id: order.OrderId,
             address: address.direction || "N/A",
@@ -70,37 +74,6 @@ const DeliveryList = () => {
     const intervalId = setInterval(fetchOrders, 10000);
 
     return () => clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
-    const checkActiveDelivery = async () => {
-      const activeDelivery = await retrieveActiveDelivery();
-      if (activeDelivery == "true" || activeDelivery == "false") {
-        return;
-      } else {
-        await saveActiveDelivery("false");
-      }
-    };
-
-    checkActiveDelivery();
-
-    console.log("Active delivery status checked");
-  }, []);
-
-  useEffect(() => {
-    const startGeofencingIfNeeded = async () => {
-      const geofencingStart = await retrieveGeofencingStart();
-
-      if (
-        geofencingStart === "false" ||
-        geofencingStart === null ||
-        geofencingStart === undefined
-      ) {
-        await startGeofencing();
-      }
-    };
-
-    startGeofencingIfNeeded();
   }, []);
 
   return (

@@ -7,6 +7,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { removeData } from "../../utils/storageAuth";
 import { useStore } from "../../utils/store";
 import { stopGeofencing } from "@/utils/geofencing";
+import { inactiveStaff } from "@/utils/functions";
 
 const Header = () => {
   const [ChangeLogged, dataStaff] = useStore((state) => [
@@ -20,8 +21,8 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-    console.log("Logout initiated");
-
+    console.log("Cerrando sesión...");
+    await inactiveStaff();
     await stopGeofencing();
     setModalVisible(false);
     removeData();

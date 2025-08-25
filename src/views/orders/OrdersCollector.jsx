@@ -22,6 +22,10 @@ const OrdersCollector = () => {
           },
         });
 
+        if (response.status === 204) {
+          return;
+        }
+
         const data = response.data;
 
         const parsed = data.map((order) => ({

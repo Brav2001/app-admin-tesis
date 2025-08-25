@@ -1,18 +1,132 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import Checkbox from "expo-checkbox";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import MainCard from "@/components/MainCard";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import ProductList from "@/components/delivery/productList";
+import Modal from "react-native-modal";
 import theme from "@/utils/theme.js";
+import axios from "axios";
+import api from "@/utils/api";
+import { retrieveToken } from "@/utils/storageAuth";
+import * as Location from "expo-location";
+import Toast from "react-native-toast-message";
 
 const DeliveryDetail = () => {
   const [isChecked, setIsChecked] = useState(false);
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const id =
     paramId || "7"; /* redireccionar a la pantalla orderList si no exite el id*/
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [addressId, setAddressId] = useState("");
+  const router = useRouter();
+
+  const getCurrentCoords = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      throw new Error("LOCATION_PERMISSION_DENIED");
+    }
+
+    const enabled = await Location.hasServicesEnabledAsync();
+    if (!enabled) {
+      throw new Error("LOCATION_SERVICES_DISABLED");
+    }
+
+    let pos = await Location.getLastKnownPositionAsync();
+    if (!pos) {
+      pos = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+    }
+
+    const { latitude, longitude, accuracy } = pos.coords;
+    return { latitude, longitude, accuracy };
+  };
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  const handleVerifyAddress = async () => {
+    const token = await retrieveToken();
+
+    const response = await axios.get(api.getAddressByOrderId(id), {
+      headers: { "auth-token": token },
+    });
+    const addressVerified = response.data.data.Address.verified;
+    setAddressId(response.data.data.Address.id);
+    if (addressVerified) {
+      await handleReleaseDelivery();
+    } else {
+      toggleModal();
+    }
+  };
+
+  const handleUpdateAddress = async () => {
+    const token = await retrieveToken();
+    const { latitude, longitude } = await getCurrentCoords();
+    console.log({
+      id: addressId,
+      latitude,
+      longitude,
+    });
+
+    await axios
+      .put(
+        api.updateAddress(),
+        { id: addressId, latitude, longitude },
+        {
+          headers: { "auth-token": token },
+        }
+      )
+      .then(async (res) => {
+        Toast.show({
+          type: "success",
+          text1: "Dirección actualizada",
+          text2: "La dirección se ha actualizado correctamente.",
+        });
+        await handleReleaseDelivery();
+      })
+      .catch((err) => {
+        Toast.show({
+          type: "error",
+          text1: "Error al actualizar la dirección",
+          text2: "Por favor, inténtalo de nuevo.",
+        });
+        console.error("Error al actualizar la dirección:", err);
+      });
+  };
+
+  const handleReleaseDelivery = async () => {
+    const token = await retrieveToken();
+    axios
+      .put(api.releaseDelivery(id), { headers: { "auth-token": token } })
+      .then((res) => {
+        Toast.show({
+          type: "success",
+          text1: "Entrega liberada",
+          text2: "La entrega se ha liberado correctamente.",
+        });
+        router.replace("/");
+      })
+      .catch((err) => {
+        Toast.show({
+          type: "error",
+          text1: "Error al liberar la entrega",
+          text2: "Por favor, inténtalo de nuevo.",
+        });
+        console.error("Error al liberar la entrega:", err);
+      });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <MainCard title={""}>
@@ -35,10 +149,38 @@ const DeliveryDetail = () => {
             backgroundColor: !isChecked ? "#6a6a6a" : "#D9D9D9",
           }} // Cambia el color del botón según el estado del checkbox
           disabled={!isChecked}
+          onPress={handleVerifyAddress}
         >
           <Text style={styles.buttonText}>ENTREGAR</Text>
         </TouchableOpacity>
       </MainCard>
+
+      <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Verificar dirección</Text>
+          <Text style={styles.modalText}>
+            Te gustaría verificar esta dirección antes de continuar?
+          </Text>
+          <View style={styles.buttonContainer}>
+            <Pressable style={styles.cancelButton} onPress={toggleModal}>
+              <Text
+                style={{
+                  ...styles.buttonText,
+                  color: theme.colors.backgroundMain,
+                }}
+              >
+                Entregar
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.confirmButton}
+              onPress={handleUpdateAddress}
+            >
+              <Text style={styles.cancelButtonText}>Entregar y verificar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -92,10 +234,71 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginTop: 15, // Elevación para Android
   },
+  modalContainer: {
+    backgroundColor: theme.colors.backgroundCards,
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontFamily: theme.fonts.main,
+    color: "#FFF",
+  },
+  modalText: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 20,
+    fontFamily: theme.fonts.main,
+    color: "#FFF",
+    fontWeight: "normal",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    width: "100%",
+  },
+
+  cancelButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    flex: 1,
+    marginRight: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  confirmButton: {
+    backgroundColor: theme.colors.backgroundMain,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    flex: 1,
+    marginLeft: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
   buttonText: {
-    color: "#134F45", // Color del texto (verde oscuro)
-    fontWeight: "bold", // Texto en negrita
-    fontSize: 16, // Tamaño de fuente
+    fontSize: 16,
+    fontWeight: "bold",
+    fontFamily: theme.fonts.main,
+    textAlign: "center",
+  },
+
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    fontFamily: theme.fonts.main,
+    textAlign: "center",
+    color: "#FFF", // mismo color que ya usabas
+  },
+
+  confirmButtonText: {
+    color: "#FFF", // ya usas blanco en el modal; solo corrige contraste
   },
 });
 

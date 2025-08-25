@@ -1,5 +1,9 @@
 import { Slot } from "expo-router";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message"; // <-- Importa Toast
+import Toast, {
+  BaseToast,
+  ErrorToast,
+  InfoToast,
+} from "react-native-toast-message"; // <-- Importa Toast
 import "../src/utils/geofencing"; // <-- Importa geofencing
 import * as Notifications from "expo-notifications";
 
@@ -49,6 +53,26 @@ export default function Layout() {
         }}
         text2Style={{
           fontSize: 14,
+          color: "#333",
+        }}
+      />
+    ),
+    info: (props) => (
+      <InfoToast
+        {...props}
+        style={{
+          borderLeftColor: "#3b82f6",
+          backgroundColor: "#ffffff",
+          borderRadius: 10,
+          paddingVertical: 10,
+        }}
+        text1Style={{
+          fontSize: 18,
+          fontWeight: "bold",
+          color: "#000",
+        }}
+        text2Style={{
+          fontSize: 16,
           color: "#333",
         }}
       />

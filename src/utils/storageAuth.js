@@ -111,6 +111,7 @@ export const retrieveActiveDelivery = async () => {
       return activeDelivery;
     } else {
       console.log("No se encontró ningún activeDelivery almacenado");
+      return "false";
     }
   } catch (error) {
     console.log("Error al recuperar el activeDelivery:", error);
@@ -124,6 +125,7 @@ export const retrieveGeofencingStart = async () => {
       return geofencingStart;
     } else {
       console.log("No se encontró ningún geofencingStart almacenado");
+      return null;
     }
   } catch (error) {
     console.log("Error al recuperar el geofencingStart:", error);
@@ -163,6 +165,7 @@ export const retrieveStatusStaff = async () => {
       return statusStaff;
     } else {
       console.log("No se encontró ningún statusStaff almacenado");
+      return null;
     }
   } catch (error) {
     console.log("Error al recuperar el statusStaff:", error);
@@ -170,15 +173,27 @@ export const retrieveStatusStaff = async () => {
 };
 
 export const removeData = async () => {
+  const keys = [
+    "authToken",
+    "authId",
+    "authRol",
+    "activeDelivery",
+    "geofencingStart",
+    "nameZone",
+    "locationString",
+    "statusStaff",
+  ];
+
   try {
-    await SecureStore.deleteItemAsync("authToken");
-    await SecureStore.deleteItemAsync("authId");
-    await SecureStore.deleteItemAsync("authRol");
-    await SecureStore.deleteItemAsync("activeDelivery");
-    await SecureStore.deleteItemAsync("geofencingStart");
-    await SecureStore.deleteItemAsync("nameZone");
-    await SecureStore.deleteItemAsync("locationString");
-    await SecureStore.deleteItemAsync("statusStaff");
+    for (const key of keys) {
+      const value = await SecureStore.getItemAsync(key);
+      if (value !== null) {
+        await SecureStore.deleteItemAsync(key);
+        console.log(`Eliminado: ${key}`);
+      } else {
+        console.log(`No existe: ${key}`);
+      }
+    }
   } catch (error) {
     console.log("Error al eliminar la data:", error);
   }
