@@ -73,7 +73,7 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
         await saveStatusStaff("Disponible");
       } catch (apiError) {}
     } else {
-      if (statusStaff === "Inactivo") {
+      if (statusStaff !== "Inactivo") {
         try {
           const payload = {
             status: "Inactivo",
