@@ -6,10 +6,12 @@ export const useStore = create((set) => ({
   qr: null,
   time: null,
   addresses: [],
+  addressesDistinct: [],
   setTime: (time) => set({ time }),
   ChangeLogged: (value) => set((state) => ({ logged: value })),
   ChangeDataStaff: (value) => set((state) => ({ dataStaff: value })),
   setQR: (data) => set({ qr: data }),
   clearQR: () => set({ qr: null }),
   setAddresses: (addresses) => set({ addresses }),
+  setAddressesDistinct: (addressesDistinct) => set({ addressesDistinct }),
 }));

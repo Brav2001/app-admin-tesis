@@ -10,23 +10,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import * as Location from "expo-location";
 import Constants from "expo-constants";
-import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
 
 import theme from "@/utils/theme.js";
 import HeaderContainerCard from "@/components/general/HeaderContainerCard";
 import BackButton from "@/components/general/BackButton";
 import MapsCard from "@/components/general/MapsCard";
 import { useStore } from "@/utils/store";
+import { useRouter } from "expo-router";
 
 const GOOGLE_API_KEY = Constants.expoConfig?.extra?.MAP_API_KEY;
 
 type Address = {
-  id: string;
-  address: string;
-  receptor: string;
-  numberPhone: string;
-  isValidate: boolean;
   latitude: number;
   longitude: number;
 };
@@ -34,7 +28,7 @@ type Address = {
 type AddressWithDistance = Address & { distance: number };
 
 const Map = () => {
-  const [addresses] = useStore((state) => [state.addresses]);
+  const [addressesDistinct] = useStore((state) => [state.addressesDistinct]);
   const [loading, setLoading] = useState(true);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
@@ -243,8 +237,8 @@ const Map = () => {
       locationSubscription.current = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 5000, // cada 5 segundos
-          distanceInterval: 5, // o cada 5 metros de cambio
+          timeInterval: 5000,
+          distanceInterval: 5,
         },
         (location) => {
           const { latitude: currentLat, longitude: currentLon } =
@@ -253,8 +247,12 @@ const Map = () => {
           setLatitude(currentLat);
           setLongitude(currentLon);
 
-          if (addresses?.length > 0) {
-            const sorted = sortByDistance(currentLat, currentLon, addresses);
+          if (addressesDistinct?.length > 0) {
+            const sorted = sortByDistance(
+              currentLat,
+              currentLon,
+              addressesDistinct
+            );
             setOrderedPoints(sorted);
           }
         }
@@ -268,7 +266,7 @@ const Map = () => {
   };
 
   useEffect(() => {
-    if (!addresses || addresses.length === 0) {
+    if (!addressesDistinct || addressesDistinct.length === 0) {
       setErrorMsg("No hay direcciones disponibles");
       setLoading(false);
       return;
@@ -281,9 +279,8 @@ const Map = () => {
         locationSubscription.current.remove();
       }
     };
-  }, [addresses]);
+  }, [addressesDistinct]);
 
-  // Prepara datos para el WebView
   const origin = latitude && longitude ? { latitude, longitude } : null;
   const destination = useMemo(() => {
     if (!orderedPoints.length) return null;
@@ -311,76 +308,27 @@ const Map = () => {
     });
   }, [GOOGLE_API_KEY, origin, waypoints, destination, orderedPoints]);
 
-  const link = `delivery/DeliveryDetail?id=${selectedPoint?.id || ""}`;
+  const link = ` delivery/OrderListForDirection?latitude=${selectedPoint?.latitude}&longitude=${selectedPoint?.longitude}`;
+
+  const router = useRouter();
 
   useEffect(() => {
-    console.log(selectedPoint);
+    selectedPoint && router.navigate(link);
   }, [selectedPoint]);
 
   return (
     <SafeAreaView style={styles.container}>
       <MapsCard title={""}>
-        {selectedPoint ? (
-          <HeaderContainerCard id={selectedPoint.id} />
-        ) : (
-          <View style={styles.emptyHeader}>
-            <BackButton />
-            <Text style={styles.emptyHeaderText}>
-              Selecciona un pedido en el mapa para ver detalles
-            </Text>
-          </View>
-        )}
+        <View style={styles.emptyHeader}>
+          <BackButton />
+          <Text style={styles.emptyHeaderText}>
+            Selecciona un pedido en el mapa para ver detalles
+          </Text>
+        </View>
       </MapsCard>
 
-      {selectedPoint && (
-        <MapsCard title={""}>
-          <Link href={link} asChild>
-            <TouchableOpacity style={styles.touchableCard}>
-              <View style={styles.cardRow}>
-                <View style={styles.cardContent}>
-                  {!selectedPoint.isValidate && (
-                    <View style={styles.warningContainer}>
-                      <FontAwesome
-                        name="warning"
-                        size={20}
-                        color="#FFB300"
-                        style={styles.warningIcon}
-                      />
-                      <Text style={styles.warningText}>
-                        Esta dirección no ha sido verificada
-                      </Text>
-                    </View>
-                  )}
-                  <View style={styles.containerTextDetail}>
-                    <Text style={styles.detailTextTitle}>Dirección:</Text>
-                    <Text style={styles.detailText}>
-                      {selectedPoint.address}
-                    </Text>
-                  </View>
-                  <View style={styles.containerTextDetail}>
-                    <Text style={styles.detailTextTitle}>Receptor:</Text>
-                    <Text style={styles.detailText}>
-                      {selectedPoint.receptor}
-                    </Text>
-                  </View>
-                  <View style={styles.containerTextDetail}>
-                    <Text style={styles.detailTextTitle}>Teléfono:</Text>
-                    <Text style={styles.detailText}>
-                      {selectedPoint.numberPhone}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.arrowContainer}>
-                  <FontAwesome name="arrow-right" size={30} color="#FFFFFF" />
-                </View>
-              </View>
-            </TouchableOpacity>
-          </Link>
-        </MapsCard>
-      )}
-
       <MapsCard title={""} style={{ flex: 1 }}>
-        {loading && addresses.length > 0 ? (
+        {loading && addressesDistinct.length > 0 ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#fff" />
             <Text style={styles.loadingText}>Cargando mapa...</Text>
@@ -464,76 +412,6 @@ const styles = StyleSheet.create({
 
   orderButtonText: {
     color: "#FFFFFF",
-  },
-
-  touchableCard: {
-    backgroundColor: "#1E1E1E", // Oscuro elegante
-    borderRadius: 12,
-    padding: 14,
-    marginVertical: 6,
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
-  },
-
-  cardRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-
-  cardContent: {
-    flex: 1,
-    gap: 6, // espacio vertical entre bloques
-  },
-
-  arrowContainer: {
-    justifyContent: "center",
-    paddingHorizontal: 5,
-  },
-
-  warningContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF3CD",
-    borderLeftWidth: 4,
-    borderLeftColor: "#FFB300",
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    marginBottom: 10,
-  },
-
-  warningIcon: {
-    marginRight: 8,
-  },
-
-  warningText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#856404",
-    flexShrink: 1,
-  },
-
-  containerTextDetail: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap", // evita que se corte el texto
-  },
-
-  detailTextTitle: {
-    fontSize: 15,
-    color: "#fff",
-    fontWeight: "500",
-    marginRight: 5,
-  },
-
-  detailText: {
-    fontSize: 15,
-    color: "#fff",
-    fontWeight: "bold",
-    flexShrink: 1, // evita desbordamiento
   },
 
   emptyHeader: {

@@ -20,6 +20,8 @@ const api = {
   releaseDelivery: (id) => `${DOMAIN}/order_staff/releaseDelivery/${id}`,
   getAddressByOrderId: (id) => `${DOMAIN}/address/getAddressByOrder/${id}`,
   updateAddress: () => `${DOMAIN}/address/`,
+  getDistinctAddresses: (id) => `${DOMAIN}/address/distinctAddresses/${id}`,
+  getOrderByDeliveryAndLocation: () => `${DOMAIN}/order/ByDeliveryAndLocation`,
 };
 
 export default api;

@@ -5,14 +5,7 @@ import UserInfo from "@/components/ordersInfo/UserInfo";
 import OrderList from "@/components/ordersInfo/OrdersList";
 import MapButton from "@/components/general/MapButton";
 import IsAvailableSwitch from "@/components/general/IsAvalaibleSwitch";
-import {
-  retrieveId,
-  retrieveToken,
-  saveActiveDelivery,
-  retrieveActiveDelivery,
-  retrieveGeofencingStart,
-  saveGeofencingStart,
-} from "@/utils/storageAuth";
+import { retrieveId, retrieveToken } from "@/utils/storageAuth";
 import api from "@/utils/api";
 import axios from "axios";
 import { formatTimeDifference } from "@/utils/functions";
@@ -21,6 +14,9 @@ import { useStore } from "@/utils/store";
 const DeliveryList = () => {
   const [orders, setOrders] = useState([]);
   const [setAddresses] = useStore((state) => [state.setAddresses]);
+  const [setAddressesDistinct] = useStore((state) => [
+    state.setAddressesDistinct,
+  ]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchOrders = async () => {
@@ -69,11 +65,45 @@ const DeliveryList = () => {
       }
     };
 
+    const fetchDistinctAddresses = async () => {
+      try {
+        const id = await retrieveId();
+        const token = await retrieveToken();
+        const response = await axios.get(api.getDistinctAddresses(id), {
+          headers: {
+            "auth-token": token,
+          },
+        });
+
+        if (response.status === 204) {
+          return;
+        }
+
+        const data = response.data;
+
+        console.log("Distinct addresses data:", data);
+
+        const parsed = data.map((address) => ({
+          latitude: parseFloat(address.latitude || 0),
+          longitude: parseFloat(address.longitude || 0),
+        }));
+
+        setAddressesDistinct(parsed);
+      } catch (error) {
+        console.error("Error fetching distinct addresses:", error);
+      }
+    };
+
     fetchOrders();
+    fetchDistinctAddresses();
 
     const intervalId = setInterval(fetchOrders, 10000);
+    const distinctIntervalId = setInterval(fetchDistinctAddresses, 10000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(distinctIntervalId);
+    };
   }, []);
 
   return (

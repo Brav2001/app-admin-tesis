@@ -147,7 +147,7 @@ const DeliveryDetail = () => {
           style={{
             ...styles.button,
             backgroundColor: !isChecked ? "#6a6a6a" : "#D9D9D9",
-          }} // Cambia el color del botón según el estado del checkbox
+          }}
           disabled={!isChecked}
           onPress={handleVerifyAddress}
         >
