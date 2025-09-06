@@ -81,8 +81,6 @@ const DeliveryList = () => {
 
         const data = response.data;
 
-        console.log("Distinct addresses data:", data);
-
         const parsed = data.map((address) => ({
           latitude: parseFloat(address.latitude || 0),
           longitude: parseFloat(address.longitude || 0),

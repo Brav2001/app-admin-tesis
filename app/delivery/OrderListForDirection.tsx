@@ -10,41 +10,22 @@ import {
 } from "react-native";
 import MapsCard from "@/components/general/MapsCard";
 import BackButton from "@/components/general/BackButton";
-import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
 import theme from "@/utils/theme.js";
 import OrderItem from "@/components/delivery/orderItem";
 import { retrieveToken, retrieveId } from "@/utils/storageAuth";
 import axios from "axios";
 import api from "@/utils/api";
 import Modal from "react-native-modal";
-import { useLocalSearchParams } from "expo-router";
-
-const orders = [
-  {
-    id: "1",
-    address: "123 Main St, Cityville",
-    receptor: "John Doe",
-    numberPhone: "555-1234",
-    isValidate: false,
-  },
-  {
-    id: "1",
-    address: "123 Main St, Cityville",
-    receptor: "John Doe",
-    numberPhone: "555-1234",
-    isValidate: false,
-  },
-];
+import { useLocalSearchParams, useRouter } from "expo-router";
+import Toast from "react-native-toast-message";
 
 const OrderListForDirection = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const handleVerifyAddress = async () => {};
-  const toggleModal = () => {
-    setIsModalVisible(!isModalVisible);
-  };
+
+  const router = useRouter();
+
   const { latitude: paramLatitude } = useLocalSearchParams<{
     latitude: string;
   }>();
@@ -53,6 +34,53 @@ const OrderListForDirection = () => {
     longitude: string;
   }>();
   const longitude = paramLongitude || "0";
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  const handleReleaseDelivery = async (): Promise<void> => {
+    try {
+      const token = await retrieveToken();
+
+      if (!orders?.length) {
+        Toast.show({
+          type: "info",
+          text1: "Nada que liberar",
+          text2: "No hay órdenes en la lista.",
+        });
+        return;
+      }
+
+      Toast.show({
+        type: "info",
+        text1: "Liberando entrega",
+        text2: "Por favor, espera...",
+      });
+
+      await Promise.all(
+        orders.map((order) =>
+          axios.put(api.releaseDelivery(order.id), null, {
+            headers: { "auth-token": token },
+          })
+        )
+      );
+
+      Toast.show({
+        type: "success",
+        text1: "Entrega liberada",
+        text2: "La entrega se ha liberado correctamente.",
+      });
+      router.replace("/");
+    } catch (err) {
+      Toast.show({
+        type: "error",
+        text1: "Error al liberar la entrega",
+        text2: "Por favor, inténtalo de nuevo.",
+      });
+      console.error("Error al liberar la entrega:", err);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -126,7 +154,7 @@ const OrderListForDirection = () => {
           <View style={styles.buttonContainer}>
             <Pressable
               style={styles.cancelButton}
-              onPress={handleVerifyAddress}
+              onPress={handleReleaseDelivery}
             >
               <Text
                 style={{

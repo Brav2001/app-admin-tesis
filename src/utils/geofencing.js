@@ -72,6 +72,8 @@ TaskManager.defineTask(LOCATION_TASK, async ({ data, error }) => {
 
         await saveStatusStaff("Disponible");
       } catch (apiError) {}
+    } else if (distance <= bodegaData.radius && statusStaff === "Disponible") {
+      return;
     } else {
       if (statusStaff !== "Inactivo") {
         try {
